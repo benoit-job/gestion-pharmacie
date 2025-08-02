@@ -457,45 +457,48 @@
 </script>
 
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
   $('#form-nouveau-souscripteur').on('submit', function(e) {
     e.preventDefault();
 
     const submitBtn = $(this).find('button[type="submit"]');
     submitBtn.prop('disabled', true);
-    submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Enregistrement...');
+    submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Insertion en cours...');
 
-    // IMPORTANT : comme tu as un champ fichier image, utilise FormData pour gérer le fichier
     let formData = new FormData(this);
 
-    $.ajax({
-      url: 'ajax/insertInto.php',  // adapte ce chemin à ton script serveur
-      type: 'POST',
-      data: formData,
-      processData: false,  // nécessaire pour FormData
-      contentType: false,  // nécessaire pour FormData
-      success: function(response) {
-        console.log("Réponse serveur:", response);
-        if (response.trim() === 'success') {
-          showToast('success', 'Souscripteur enregistré avec succès');
-          $('#form-nouveau-souscripteur')[0].reset();
-          setTimeout(function() {
-            showToast('success', 'Redirection en cours...');
-            window.location.href = 'liste_souscripteurs.php'; // <-- adapte à ta page
-          }, 4000);
-        } else {
-          showToast('error', 'Une erreur est survenue : ' + response);
+    // On laisse tourner le spinner pendant 500 ms avant l'envoi
+    setTimeout(function() {
+      $.ajax({
+        url: 'ajax/insertInto.php',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          console.log("Réponse serveur:", response);
+          if (response.trim() === 'success') {
+            showToast('success', 'Souscripteur enregistré avec succès');
+            $('#form-nouveau-souscripteur')[0].reset();
+            setTimeout(function() {
+              showToast('success', 'Redirection en cours...');
+              window.location.href = 'liste_souscripteurs.php';
+            }, 4000);
+          } else {
+            showToast('error', 'Une erreur est survenue : ' + response);
+          }
+        },
+        error: function() {
+          showToast('error', 'Erreur de connexion au serveur');
+        },
+        complete: function() {
+          submitBtn.prop('disabled', false);
+          submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer le Souscripteur');
         }
-      },
-      error: function() {
-        showToast('error', 'Erreur de connexion au serveur');
-      },
-      complete: function() {
-        submitBtn.prop('disabled', false);
-        submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer le Souscripteur');
-      }
-    });
+      });
+    }, 1000); // 0,5 seconde de spinner avant l'envoi
   });
 });
+
 
 </script>
