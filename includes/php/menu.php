@@ -22,6 +22,16 @@
   </a>
 </div>
 
+<!-- Tableau de Bord -->
+<div class="nav-item-wrapper">
+  <a class="nav-link label-1" href="type_souscripteurs.php" role="button" data-bs-toggle="" aria-expanded="false">
+    <div class="d-flex align-items-center">
+      <span class="nav-link-icon icon-dashboard"><i class="fas fa-user-friends"></i></span>
+      <span class="nav-link-text-wrapper"><span class="nav-link-text">Type souscripteur</span></span>
+    </div>
+  </a>
+</div>
+
 <!-- Gestion des Souscripteurs -->
 <div class="nav-item-wrapper">
   <a class="nav-link dropdown-indicator label-1" href="#souscripteurs" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="souscripteurs">

@@ -23,6 +23,26 @@ if (isset($_POST['nomRegion'])) {
         }
 } 
 
+if (isset($_POST['nomType'])) {
+    // Nettoyage des données
+    $nomType = trim($_POST['nomType']);
+    $activeType = isset($_POST['activeType']) ? 'oui' : 'non';
+    $id_user = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+
+    // Vérification des données obligatoires
+        $query = "INSERT INTO type_souscripteurs (id_user, nom, active, date_insert) 
+                  VALUES ($id_user, '$nomType', '$activeType', NOW())";
+        
+        $result = mysqli_query($bdd, $query);
+
+        if ($result) {
+            echo 'success';
+            exit;
+        } else {
+            echo 'fail: ' . mysqli_error($bdd);
+        }
+} 
+
 if (isset($_POST['nomLieu'])) {
     // Nettoyage des données
     $nomLieu = trim($_POST['nomLieu']);
