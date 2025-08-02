@@ -44,7 +44,7 @@
   <div class="parent-wrapper label-1">
     <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="souscripteurs">
       <li class="nav-item">
-        <a class="nav-link" href="tous_souscripteurs.php" data-bs-toggle="" aria-expanded="false">
+        <a class="nav-link" href="liste_souscripteurs.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-list text-primary"></i></span>
             <span class="nav-link-text">Tous les souscripteurs</span>

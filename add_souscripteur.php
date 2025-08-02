@@ -479,7 +479,10 @@
         if (response.trim() === 'success') {
           showToast('success', 'Souscripteur enregistré avec succès');
           $('#form-nouveau-souscripteur')[0].reset();
-          // Tu peux aussi fermer modals ou recharger des tables ici
+          setTimeout(function() {
+            showToast('success', 'Redirection en cours...');
+            window.location.href = 'liste_souscripteurs.php'; // <-- adapte à ta page
+          }, 4000);
         } else {
           showToast('error', 'Une erreur est survenue : ' + response);
         }
