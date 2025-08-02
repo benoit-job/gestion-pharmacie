@@ -17,7 +17,26 @@
     <title>Nouveau souscripteur</title>
 
     <?php include('includes/php/includes-css.php');?>
+    
+<style>
+.image-upload-container {
+    transition: all 0.3s ease;
+}
 
+.image-preview-frame:hover {
+    border-color: #86b7fe !important;
+}
+
+.image-preview-frame.highlight {
+    border: 2px dashed #0d6efd;
+    background-color: #e9f5ff;
+}
+
+/* Style pour le message par défaut */
+#default_icon {
+    transition: all 0.3s ease;
+}
+</style>
   </head>
 
 
@@ -42,249 +61,253 @@
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Nouveau Souscripteur</h5>
                     </div>
-                    <form id="form-nouveau-souscripteur" action="traitement_souscripteur.php" method="POST">
+                    <form id="form-nouveau-souscripteur" method="POST">
                         <div class="card-body">
-                        
-                        <!-- Section 1: Informations Personnelles (Repliable) -->
-                        <div class="accordion mb-4" id="accordionInfosPerso">
-                            <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfosPerso" aria-expanded="true">
-                                <i class="fas fa-id-card me-2"></i> Informations Personnelles
-                                </button>
-                            </h2>
-                            <div id="collapseInfosPerso" class="accordion-collapse collapse show" data-bs-parent="#accordionInfosPerso">
-                                <div class="accordion-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <label class="form-label"> Type Souscripteur <strong class="text-danger">*</strong></label>
-                                            <select class="form-select organizerSingle" id="id_region" name="id_region" required>
-                                                <option disabled selected>Choisissez ...</option> 
-                                                <?php
-                                                $query = "SELECT id, UPPER(nom) AS nom FROM type_souscripteurs WHERE active = 'oui' ORDER BY type_souscripteurs.nom ASC";
-                                                $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
-                                                while ($region = mysqli_fetch_assoc($resultat)) {
-                                                    echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom']) . "</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label"> Civilité <strong class="text-danger">*</strong></label>
-                                            <select class="form-select organizerSingle" id="organizerSingle" name="civilite" required>
-                                                <option value="" disabled selected>Sélectionnez une civilité...</option>
-                                                <option value="M.">Monsieur (M.)</option>
-                                                <option value="Mme">Madame (Mme)</option>
-                                                <option value="Mlle">Mademoiselle (Mlle)</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label"> Nom <strong class="text-danger">*</strong></label>
-                                            <input type="text" class="form-control" name="nom" required>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label"> Prénom <strong class="text-danger">*</strong></label>
-                                            <input type="text" class="form-control" name="prenom" required>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">Date de Naissance</label>
-                                            <input type="date" class="form-control" name="date_naissance">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">Lieu de Naissance</label>
-                                            <input type="text" class="form-control" name="lieu_naissance">
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-end mt-3">
-                                        <button type="button" class="btn btn-success btn-sauvegarder-section">
-                                        <i class="fas fa-check me-1"></i> Sauvegarder Section
+                            <!-- Section 1: Informations Personnelles (Repliable) -->
+                            <div class="accordion mb-4" id="accordionInfosPerso">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfosPerso" aria-expanded="true">
+                                            <i class="fas fa-id-card me-2"></i> Informations Personnelles
                                         </button>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-
-                        <!-- Section 2: Coordonnées (Repliable) -->
-                        <div class="accordion mb-4" id="accordionCoordonnees">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCoordonnees">
-                                    <i class="fas fa-address-book me-2"></i> Coordonnées
-                                    </button>
-                                </h2>
-                                <div id="collapseCoordonnees" class="accordion-collapse collapse" data-bs-parent="#accordionCoordonnees">
-                                    <div class="accordion-body">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Adresse <strong class="text-danger">*</strong></label>
-                                                <input type="text" class="form-control" name="adresse" required>
+                                    </h2>
+                                    <div id="collapseInfosPerso" class="accordion-collapse collapse show" data-bs-parent="#accordionInfosPerso">
+                                        <div class="accordion-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Type Souscripteur <strong class="text-danger">*</strong></label>
+                                                    <select class="form-select organizerSingle" id="id_type_souscripteur" name="id_type_souscripteur" required>
+                                                        <option disabled selected>Choisissez ...</option> 
+                                                        <?php
+                                                        $query = "SELECT id, UPPER(nom) AS nom FROM type_souscripteurs WHERE active = 'oui' ORDER BY type_souscripteurs.nom ASC";
+                                                        $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
+                                                        while ($region = mysqli_fetch_assoc($resultat)) {
+                                                            echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom']) . "</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Civilité <strong class="text-danger">*</strong></label>
+                                                    <select class="form-select organizerSingle" id="organizerSingle" name="civilite" required>
+                                                        <option value="" disabled selected>Sélectionnez une civilité...</option>
+                                                        <option value="M.">Monsieur (M.)</option>
+                                                        <option value="Mme">Madame (Mme)</option>
+                                                        <option value="Mlle">Mademoiselle (Mlle)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Nom <strong class="text-danger">*</strong></label>
+                                                    <input type="text" class="form-control" name="nom" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Prénom <strong class="text-danger">*</strong></label>
+                                                    <input type="text" class="form-control" name="prenom" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Date de Naissance</label>
+                                                    <input type="date" class="form-control" name="date_naissance">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Lieu de Naissance</label>
+                                                    <input type="text" class="form-control" name="lieu_naissance">
+                                                </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Complément d'adresse</label>
-                                                <input type="text" class="form-control" name="complement_adresse">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Nationalité <strong class="text-danger">*</strong></label>
-                                                <input type="text" class="form-control" name="nationalite" required>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Région <strong class="text-danger">*</strong></label>
-                                                <select class="form-select organizerSingle" id="id_region" name="id_region" required>
-                                                    <option disabled selected>Choisissez ...</option> 
-                                                    <?php
-                                                    $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions WHERE active = 'oui' ORDER BY nom_region";
-                                                    $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
-                                                    while ($region = mysqli_fetch_assoc($resultat)) {
-                                                        echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom_region']) . "</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Lieu d'exercice <strong class="text-danger">*</strong></label>
-                                                <select class="form-select organizerSingle" id="id_lieu_exercice" name="id_lieu_exercice" required>
-                                                    <option disabled selected>Choisissez ...</option> 
-                                                    <?php
-                                                    $query = "SELECT id, UPPER(nom_lieu) AS nom_lieu FROM lieu_exercices WHERE active = 'oui' ORDER BY lieu_exercices.nom_lieu";
-                                                    $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
-                                                    while ($lieu_exercice = mysqli_fetch_assoc($resultat)) {
-                                                        echo "<option value='" . htmlspecialchars($lieu_exercice['id']) . "'>" . htmlspecialchars($lieu_exercice['nom_lieu']) . "</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Téléphone fixe</label>
-                                                <input type="tel" class="form-control" name="telephone_fixe">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Téléphone portable <strong class="text-danger">*</strong></label>
-                                                <input type="tel" class="form-control" name="telephone_portable" required>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Email</label>
-                                                <input type="email" class="form-control" name="email">
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-end mt-3">
-                                            <button type="button" class="btn btn-success btn-sauvegarder-section">
-                                                <i class="fas fa-check me-1"></i> Sauvegarder Section
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Section 3: Profession (Repliable) -->
-                        <div class="accordion mb-4" id="accordionProfession">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProfession">
-                                    <i class="fas fa-briefcase me-2"></i> Souscription – Établissement
-                                    </button>
-                                </h2>
-                                <div id="collapseProfession" class="accordion-collapse collapse" data-bs-parent="#accordionProfession">
-                                    <div class="accordion-body">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Nom de l'établissement <strong class="text-danger">*</strong></label>
-                                                <input type="text" class="form-control" name="nom_etablissement" required>
+                            <!-- Section 2: Coordonnées (Repliable) -->
+                            <div class="accordion mb-4" id="accordionCoordonnees">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCoordonnees">
+                                            <i class="fas fa-address-book me-2"></i> Coordonnées
+                                        </button>
+                                    </h2>
+                                    <div id="collapseCoordonnees" class="accordion-collapse collapse" data-bs-parent="#accordionCoordonnees">
+                                        <div class="accordion-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Adresse <strong class="text-danger">*</strong></label>
+                                                    <input type="text" class="form-control" name="adresse" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Complément d'adresse</label>
+                                                    <input type="text" class="form-control" name="complement_adresse">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Nationalité <strong class="text-danger">*</strong></label>
+                                                    <input type="text" class="form-control" name="nationalite" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Région <strong class="text-danger">*</strong></label>
+                                                    <select class="form-select organizerSingle" id="id_region" name="id_region" required>
+                                                        <option disabled selected>Choisissez ...</option> 
+                                                        <?php
+                                                        $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions WHERE active = 'oui' ORDER BY nom_region";
+                                                        $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
+                                                        while ($region = mysqli_fetch_assoc($resultat)) {
+                                                            echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom_region']) . "</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Lieu d'exercice <strong class="text-danger">*</strong></label>
+                                                    <select class="form-select organizerSingle" id="id_lieu_exercice" name="id_lieu_exercice" required>
+                                                        <option disabled selected>Choisissez ...</option> 
+                                                        <?php
+                                                        $query = "SELECT id, UPPER(nom_lieu) AS nom_lieu FROM lieu_exercices WHERE active = 'oui' ORDER BY lieu_exercices.nom_lieu";
+                                                        $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
+                                                        while ($lieu_exercice = mysqli_fetch_assoc($resultat)) {
+                                                            echo "<option value='" . htmlspecialchars($lieu_exercice['id']) . "'>" . htmlspecialchars($lieu_exercice['nom_lieu']) . "</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Téléphone fixe</label>
+                                                    <input type="tel" class="form-control" name="telephone_fixe">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Téléphone portable <strong class="text-danger">*</strong></label>
+                                                    <input type="tel" class="form-control" name="telephone_portable" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Email</label>
+                                                    <input type="email" class="form-control" name="email">
+                                                </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Secteur d'activité <strong class="text-danger">*</strong></label>
-                                                <select class="form-select organizerSingle" id="secteur_activite" name="secteur_activite" required>
-                                                    <option value="" disabled selected>Sélectionnez le secteur ...</option>
-                                                    <!-- Secteur public -->
-                                                    <option value="pharmacie_hospitaliere_publique">Pharmacie hospitalière publique</option>
-                                                    <option value="pharmacie_sante_publique">Pharmacie de la Santé Publique (PSP)</option>
-                                                    <option value="programme_national">Programme national (VIH, palu, tuberculose…)</option>
-                                                    <!-- Secteur privé -->
-                                                    <option value="pharmacie_officine">Pharmacie d'officine (privée)</option>
-                                                    <option value="grossiste_repartiteur">Grossiste répartiteur privé</option>
-                                                    <option value="parapharmacie">Parapharmacie</option>
-                                                    <option value="pharmacie_privee_hospitaliere">Pharmacie hospitalière privée (clinique)</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Montant souscrit (FCFA)</label>
-                                                <input type="number" class="form-control" name="montant_souscrit">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Montant souscrit type 1 (FCFA)</label>
-                                                <input type="number" class="form-control" name="montant_souscrit_type1">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Montant souscrit type 2 (FCFA)</label>
-                                                <input type="number" class="form-control" name="montant_souscrit_type2">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Nombre d'actions</label>
-                                                <input type="number" class="form-control" name="nombre_actions">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Date de souscription <strong class="text-danger">*</strong></label>
-                                                <input type="date" class="form-control" name="date_souscription" required>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-end mt-3">
-                                            <button type="button" class="btn btn-success btn-sauvegarder-section">
-                                                <i class="fas fa-check me-1"></i> Sauvegarder Section
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Section 4: Documents (Repliable) -->
-                        <div class="accordion mb-4" id="accordionDocuments">
-                            <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments">
-                                <i class="fas fa-file-upload me-2"></i> DOCUMENTS ET AUTRES 
+                            <!-- Section 3: Profession (Repliable) -->
+                            <div class="accordion mb-4" id="accordionProfession">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProfession">
+                                            <i class="fas fa-briefcase me-2"></i> Souscription – Établissement
+                                        </button>
+                                    </h2>
+                                    <div id="collapseProfession" class="accordion-collapse collapse" data-bs-parent="#accordionProfession">
+                                        <div class="accordion-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Nom de l'établissement <strong class="text-danger">*</strong></label>
+                                                    <input type="text" class="form-control" name="nom_etablissement" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Secteur d'activité <strong class="text-danger">*</strong></label>
+                                                    <select class="form-select organizerSingle" id="secteur_activite" name="secteur_activite" required>
+                                                        <option value="" disabled selected>Sélectionnez le secteur ...</option>
+                                                        <!-- Secteur public -->
+                                                        <option value="pharmacie_hospitaliere_publique">Pharmacie hospitalière publique</option>
+                                                        <option value="pharmacie_sante_publique">Pharmacie de la Santé Publique (PSP)</option>
+                                                        <option value="programme_national">Programme national (VIH, palu, tuberculose…)</option>
+                                                        <!-- Secteur privé -->
+                                                        <option value="pharmacie_officine">Pharmacie d'officine (privée)</option>
+                                                        <option value="grossiste_repartiteur">Grossiste répartiteur privé</option>
+                                                        <option value="parapharmacie">Parapharmacie</option>
+                                                        <option value="pharmacie_privee_hospitaliere">Pharmacie hospitalière privée (clinique)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Montant souscrit (FCFA)</label>
+                                                    <input type="number" class="form-control" name="montant_souscrit">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Montant souscrit type 1 (FCFA)</label>
+                                                    <input type="number" class="form-control" name="montant_souscrit_type1">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Montant souscrit type 2 (FCFA)</label>
+                                                    <input type="number" class="form-control" name="montant_souscrit_type2">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Nombre d'actions</label>
+                                                    <input type="number" class="form-control" name="nombre_actions">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Date de souscription <strong class="text-danger">*</strong></label>
+                                                    <input type="date" class="form-control" name="date_souscription" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section 4: Documents (Repliable) -->
+                            <div class="accordion mb-4" id="accordionDocuments">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments">
+                                            <i class="fas fa-file-upload me-2"></i> Image Établissement
+                                        </button>
+                                    </h2>
+                                    <div id="collapseDocuments" class="accordion-collapse collapse" data-bs-parent="#accordionDocuments">
+                                        <div class="accordion-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-12">
+                                                    <div class="text-center mt-2 mb-3">
+                                                        <label class="form-label d-block mb-2">Image établissement (Optionnel)</label>
+                                                        
+                                                        <div class="image-upload-container" style="max-width: 300px; margin: 0 auto;">
+                                                            <!-- Cadre cliquable avec position relative -->
+                                                            <div class="image-preview-frame border rounded p-2 mb-2 position-relative" 
+                                                                style="height: 200px; cursor: pointer; overflow: hidden; background-color: #f8f9fa;"
+                                                                onclick="handleImageClick()">
+                                                                
+                                                                <!-- Aperçu de l'image qui remplit tout le cadre -->
+                                                                <img id="image_preview" src="" alt="Aperçu" 
+                                                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none;">
+                                                                
+                                                                <!-- Message par défaut centré qui disparaît COMPLÈTEMENT quand une image est sélectionnée -->
+                                                                <div id="default_icon" class="h-100 d-flex flex-column align-items-center justify-content-center">
+                                                                    <i class="fas fa-camera fa-3x text-secondary mb-2"></i>
+                                                                    <p class="mb-0 text-center">Cliquez pour ajouter une image</p>
+                                                                    <small class="text-muted">(Glisser-déposer possible)</small>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- Champ fichier caché -->
+                                                            <input type="file" id="image_etablissement" name="image_etablissement" 
+                                                                class="d-none" accept="image/*" onchange="previewImage(this)">
+                                                            
+                                                            <!-- Boutons d'action -->
+                                                            <div class="d-flex justify-content-center gap-2 mt-2">
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="handleUploadClick()">
+                                                                    <i class="fas fa-upload me-1"></i> Télécharger
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary" id="cameraBtn" onclick="handleCameraClick()">
+                                                                    <i class="fas fa-camera me-1"></i> Prendre photo
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="resetImage()" id="resetBtn" style="display: none;">
+                                                                    <i class="fas fa-trash me-1"></i> Supprimer
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bouton d'enregistrement global -->
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn btn-outline-secondary me-3" id="btn-annuler-tout">
+                                    <i class="fas fa-eraser me-2"></i> Tout Annuler
                                 </button>
-                            </h2>
-                            <div id="collapseDocuments" class="accordion-collapse collapse" data-bs-parent="#accordionDocuments">
-                                <div class="accordion-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                    <label class="form-label">Pièce d'identité*</label>
-                                    <input type="file" class="form-control" name="piece_identite" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                    <label class="form-label">Justificatif de domicile*</label>
-                                    <input type="file" class="form-control" name="justificatif_domicile" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                    <label class="form-label">Autre document 1</label>
-                                    <input type="file" class="form-control" name="autre_document1">
-                                    </div>
-                                    <div class="col-md-6">
-                                    <label class="form-label">Autre document 2</label>
-                                    <input type="file" class="form-control" name="autre_document2">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mt-3">
-                                    <button type="button" class="btn btn-success btn-sauvegarder-section">
-                                    <i class="fas fa-check me-1"></i> Sauvegarder Section
-                                    </button>
-                                </div>
-                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i> Enregistrer le Souscripteur
+                                </button>
                             </div>
-                            </div>
-                        </div>
-
-                        <!-- Bouton d'enregistrement global -->
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-outline-secondary me-3" id="btn-annuler-tout">
-                            <i class="fas fa-eraser me-2"></i> Tout Annuler
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i> Enregistrer le Souscripteur
-                            </button>
-                        </div>
                         </div>
                     </form>
                 </div>
@@ -310,4 +333,166 @@
 
 </html>
 
+<script>
+    // Détection appareil mobile
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
 
+    // Gestion du clic principal
+    function handleImageClick() {
+        if (isMobileDevice()) {
+            showActionDialog();
+        } else {
+            document.getElementById('image_etablissement').click();
+        }
+    }
+
+    // Gestion du clic sur "Télécharger"
+    function handleUploadClick() {
+        const input = document.getElementById('image_etablissement');
+        input.removeAttribute('capture');
+        input.click();
+    }
+
+    // Gestion du clic sur "Prendre photo"
+    function handleCameraClick() {
+        if (isMobileDevice()) {
+            const input = document.getElementById('image_etablissement');
+            input.setAttribute('capture', 'environment');
+            input.click();
+        } else {
+            alert("La capture photo directe n'est disponible que sur mobile. Veuillez sélectionner une image.");
+            document.getElementById('image_etablissement').click();
+        }
+    }
+
+    // Afficher un dialogue de choix sur mobile
+    function showActionDialog() {
+        if (confirm("Voulez-vous :\n\n1. Prendre une photo (Appuyez sur OK)\n2. Choisir depuis la galerie (Appuyez sur Annuler)")) {
+            handleCameraClick();
+        } else {
+            handleUploadClick();
+        }
+    }
+
+    // Aperçu de l'image
+    function previewImage(input) {
+        const preview = document.getElementById('image_preview');
+        const defaultIcon = document.getElementById('default_icon');
+        const resetBtn = document.getElementById('resetBtn');
+        const frame = document.querySelector('.image-preview-frame');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                defaultIcon.style.display = 'none'; // Cache COMPLÈTEMENT le message
+                frame.style.backgroundColor = 'transparent'; // Retire le fond gris
+                resetBtn.style.display = 'block';
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Réinitialiser l'image
+    function resetImage() {
+        const input = document.getElementById('image_etablissement');
+        const preview = document.getElementById('image_preview');
+        const defaultIcon = document.getElementById('default_icon');
+        const resetBtn = document.getElementById('resetBtn');
+        const frame = document.querySelector('.image-preview-frame');
+        
+        input.value = '';
+        preview.src = '';
+        preview.style.display = 'none';
+        defaultIcon.style.display = 'flex'; // Réaffiche le message
+        frame.style.backgroundColor = '#f8f9fa'; // Remet le fond gris
+        resetBtn.style.display = 'none';
+    }
+
+    // Glisser-déposer
+    const dropArea = document.querySelector('.image-preview-frame');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        dropArea.classList.add('border-primary');
+        dropArea.style.backgroundColor = '#e9f5ff';
+    }
+
+    function unhighlight() {
+        dropArea.classList.remove('border-primary');
+        dropArea.style.backgroundColor = '#f8f9fa';
+    }
+
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        const input = document.getElementById('image_etablissement');
+        
+        input.files = files;
+        previewImage(input);
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+  $('#form-nouveau-souscripteur').on('submit', function(e) {
+    e.preventDefault();
+
+    const submitBtn = $(this).find('button[type="submit"]');
+    submitBtn.prop('disabled', true);
+    submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Enregistrement...');
+
+    // IMPORTANT : comme tu as un champ fichier image, utilise FormData pour gérer le fichier
+    let formData = new FormData(this);
+
+    $.ajax({
+      url: 'ajax/insertInto.php',  // adapte ce chemin à ton script serveur
+      type: 'POST',
+      data: formData,
+      processData: false,  // nécessaire pour FormData
+      contentType: false,  // nécessaire pour FormData
+      success: function(response) {
+        console.log("Réponse serveur:", response);
+        if (response.trim() === 'success') {
+          showToast('success', 'Souscripteur enregistré avec succès');
+          $('#form-nouveau-souscripteur')[0].reset();
+          // Tu peux aussi fermer modals ou recharger des tables ici
+        } else {
+          showToast('error', 'Une erreur est survenue : ' + response);
+        }
+      },
+      error: function() {
+        showToast('error', 'Erreur de connexion au serveur');
+      },
+      complete: function() {
+        submitBtn.prop('disabled', false);
+        submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer le Souscripteur');
+      }
+    });
+  });
+});
+
+</script>
