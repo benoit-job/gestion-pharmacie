@@ -226,7 +226,7 @@ if (isset($_POST["supprimerLieu"])) {
                                 <select class="form-select organizerSingle" id="organizerSingle" id="id_region" name="id_region">
                                     <option disabled selected>Choisissez ...</option> 
                                         <?php
-                                        $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions ORDER BY nom_region";
+                                        $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions WHERE active = 'oui' ORDER BY nom_region";
                                         $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
                                         while ($region = mysqli_fetch_assoc($resultat)) {
                                             echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom_region']) . "</option>";
@@ -290,7 +290,7 @@ if (isset($_POST["supprimerLieu"])) {
                                 <select class="form-select organizerSingle" id="id_region" name="id_region">
                                     <option disabled selected>Choisissez ...</option> 
                                         <?php
-                                        $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions ORDER BY nom_region";
+                                        $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions WHERE active = 'oui' ORDER BY nom_region";
                                         $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
                                         while ($region = mysqli_fetch_assoc($resultat)) {
                                             echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom_region']) . "</option>";

@@ -84,15 +84,15 @@
                 </div>
                 <div class="modal-body">
                 <div class="mb-3">
-  <label for="organizerSingle" class="form-label">Organisateur</label>
-  <select class="form-select organizerSingle" id="organizerSingle">
-    <option value="">Select organizer...</option>
-    <option value="California Institute of Technology">California Institute of Technology</option>
-    <option value="GSAS Open Labs At Harvard">GSAS Open Labs At Harvard</option>
-    <option value="Massachusetts Institute of Technology">Massachusetts Institute of Technology</option>
-    <option value="University of Chicago">University of Chicago</option>
-  </select>
-</div>
+                  <label for="organizerSingle" class="form-label">Organisateur</label>
+                  <select class="form-select organizerSingle" id="organizerSingle">
+                    <option value="">Select organizer...</option>
+                    <option value="California Institute of Technology">California Institute of Technology</option>
+                    <option value="GSAS Open Labs At Harvard">GSAS Open Labs At Harvard</option>
+                    <option value="Massachusetts Institute of Technology">Massachusetts Institute of Technology</option>
+                    <option value="University of Chicago">University of Chicago</option>
+                  </select>
+                </div>
                 <div class="mb-3">
                     <label for="regionCode" class="form-label">Code région</label>
                     <input type="text" class="form-control" id="regionCode" name="regionCode">
