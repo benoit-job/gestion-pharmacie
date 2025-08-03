@@ -1275,4 +1275,114 @@ function obtenir_role_utilisateur($user_id) {
     mysqli_stmt_execute($stmt);
     return mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 }
+
+function getUserPseudo($bdd, $userId) {
+    // Sécurise l'ID en entier
+    $userId = intval($userId);
+
+    $query = "SELECT pseudo FROM users WHERE id = $userId LIMIT 1";
+    $result = mysqli_query($bdd, $query);
+
+    if ($result && $row = mysqli_fetch_assoc($result)) {
+        return $row['pseudo'];
+    }
+
+    return null; // Retourne null si aucun pseudo trouvé
+}
+
+
+function supprimerSouscripteurAvecHistorique(mysqli $bdd, string $idCrypted, int $idUser) : bool {
+    // Décryptage et sécurisation ID
+    $id_souscripteur = intval(crypt_decrypt_chaine($idCrypted, 'D'));
+    if ($id_souscripteur <= 0) {
+        return false;
+    }
+
+    // Récupérer le pseudo utilisateur
+    $nom_user = mysqli_real_escape_string($bdd, getUserPseudo($bdd, $idUser));
+
+    // Récupérer toutes les données du souscripteur à supprimer
+    $selectQuery = "
+        SELECT s.*,
+               l.id_region,
+               l.nom_lieu,
+               r.nom_region,
+               ts.nom AS nom_type_souscripteur
+        FROM souscripteurs AS s
+        LEFT JOIN lieu_exercices AS l ON l.id = s.id_lieu_exercice
+        LEFT JOIN regions AS r ON r.id = l.id_region
+        LEFT JOIN type_souscripteurs AS ts ON ts.id = s.id_type_souscripteur
+        WHERE s.id_souscripteur = $id_souscripteur
+        LIMIT 1
+    ";
+    $result = mysqli_query($bdd, $selectQuery);
+    
+    if (!$result) {
+        die("Erreur lors de la récupération des données: " . mysqli_error($bdd));
+    }
+
+    if ($souscripteur = mysqli_fetch_assoc($result)) {
+        // Échapper toutes les valeurs pour sécurité
+        $type_souscripteur = mysqli_real_escape_string($bdd, $souscripteur['nom_type_souscripteur'] ?? '');
+        $region = mysqli_real_escape_string($bdd, $souscripteur['nom_region'] ?? '');
+        $lieu_exercice = mysqli_real_escape_string($bdd, $souscripteur['nom_lieu'] ?? '');
+        $civilite = mysqli_real_escape_string($bdd, $souscripteur['civilite'] ?? '');
+        $nom = mysqli_real_escape_string($bdd, $souscripteur['nom'] ?? '');
+        $prenom = mysqli_real_escape_string($bdd, $souscripteur['prenom'] ?? '');
+        $date_naissance = !empty($souscripteur['date_naissance']) ? "'" . mysqli_real_escape_string($bdd, $souscripteur['date_naissance']) . "'" : "NULL";
+        $lieu_naissance = mysqli_real_escape_string($bdd, $souscripteur['lieu_naissance'] ?? '');
+        $adresse = mysqli_real_escape_string($bdd, $souscripteur['adresse'] ?? '');
+        $code_postal = mysqli_real_escape_string($bdd, $souscripteur['code_postal'] ?? '');
+        $nationalite = mysqli_real_escape_string($bdd, $souscripteur['nationalite'] ?? '');
+        $telephone_fixe = mysqli_real_escape_string($bdd, $souscripteur['telephone_fixe'] ?? '');
+        $telephone_portable = mysqli_real_escape_string($bdd, $souscripteur['telephone_portable'] ?? '');
+        $email = mysqli_real_escape_string($bdd, $souscripteur['email'] ?? '');
+        $nom_etablissement = mysqli_real_escape_string($bdd, $souscripteur['nom_etablissement'] ?? '');
+        $secteur_activite = mysqli_real_escape_string($bdd, $souscripteur['secteur_activite'] ?? '');
+        $n_souscription = mysqli_real_escape_string($bdd, $souscripteur['n_souscription'] ?? '');
+        $date_souscription = !empty($souscripteur['date_souscription']) ? "'" . mysqli_real_escape_string($bdd, $souscripteur['date_souscription']) . "'" : "NULL";
+        
+        // Conversion des nombres
+        $montant_souscrit = floatval($souscripteur['montant_souscrit'] ?? 0);
+        $montant_souscrit_type1 = floatval($souscripteur['montant_souscrit_type1'] ?? 0);
+        $montant_souscrit_type2 = floatval($souscripteur['montant_souscrit_type2'] ?? 0);
+        $nombre_actions = intval($souscripteur['nombre_actions'] ?? 0);
+
+        // Requête d'insertion dans l'historique
+        $insertQuery = "
+            INSERT INTO historiques_souscripteurs (
+                id_souscripteur, user, type_souscripteur, region, lieu_exercice,
+                civilite, nom, prenom, date_naissance, lieu_naissance, adresse, code_postal,
+                nationalite, telephone_fixe, telephone_portable, email, nom_etablissement,
+                secteur_activite, montant_souscrit, montant_souscrit_type1, montant_souscrit_type2,
+                nombre_actions, n_souscription, date_souscription, action, date_suppression
+            ) VALUES (
+                $id_souscripteur, '$nom_user', '$type_souscripteur', '$region', '$lieu_exercice',
+                '$civilite', '$nom', '$prenom', $date_naissance, '$lieu_naissance', '$adresse', '$code_postal',
+                '$nationalite', '$telephone_fixe', '$telephone_portable', '$email', '$nom_etablissement',
+                '$secteur_activite', $montant_souscrit, $montant_souscrit_type1, $montant_souscrit_type2,
+                $nombre_actions, '$n_souscription', $date_souscription,
+                'supprimer', NOW()
+            )
+        ";
+        
+        if (!mysqli_query($bdd, $insertQuery)) {
+            die("Erreur lors de l'insertion dans l'historique: " . mysqli_error($bdd));
+        }
+
+        // Supprimer le souscripteur
+        $deleteQuery = "DELETE FROM souscripteurs WHERE id_souscripteur = $id_souscripteur";
+        if (!mysqli_query($bdd, $deleteQuery)) {
+            die("Erreur lors de la suppression du souscripteur: " . mysqli_error($bdd));
+        }
+
+        return true;
+    } else {
+        die("Souscripteur non trouvé pour suppression.");
+    }
+}
+
+
+
+
 ?>  

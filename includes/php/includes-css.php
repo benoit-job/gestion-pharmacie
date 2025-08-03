@@ -43,6 +43,11 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
     <style type="text/css">
+      /* Masquer toutes les colonnes hidden */
+.hidden {
+    display: none !important;
+}
+
       .table th, table td{padding: 5px 5px !important; vertical-align: middle !important;font-size: 0.8rem;}
       .table tbody, .table thead{white-space: nowrap;}
       #navbarVerticalCollapse .nav-item-wrapper img{width: 15px; height: 15px; margin-right: 5px;}

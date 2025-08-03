@@ -59,14 +59,14 @@
           </div>
         </a>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link" href="recherche_avancee.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-search text-info"></i></span>
             <span class="nav-link-text">Recherche avancée</span>
           </div>
         </a>
-      </li>
+      </li> -->
       <li class="nav-item">
         <hr class="my-2">
         <small class="text-muted ps-3">Classification par statut</small>

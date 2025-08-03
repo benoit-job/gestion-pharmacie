@@ -19,6 +19,22 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<!-- SheetJS pour Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- FileSaver pour Word et Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+<script>
+    // Initialisez docx comme variable globale
+    var docx = window.docx;
+</script>
+
+<!-- html2canvas et jsPDF pour PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
 <script>
 $(document).ready(function() {
@@ -475,4 +491,147 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php unset($_SESSION['toast']); ?>
     <?php endif; ?>
 });
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Gestion générique des boutons
+    document.querySelectorAll('.excel-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            exportToExcel(this);
+        });
+    });
+    document.querySelectorAll('.word-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            exportToWord(this);
+        });
+    });
+    document.querySelectorAll('.pdf-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            exportToPDF(this);
+        });
+    });
+
+    // Récupère le tableau lié au bouton cliqué
+    function getRelatedTable(button) {
+        return button.closest('.card').querySelector('table');
+    }
+
+    // Génère le nom du fichier avec date du jour
+    function generateFileName(table, extension) {
+        const title = table.dataset.title || "export";
+        const date = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+        return `${title}_${date}.${extension}`;
+    }
+
+    // Export Excel
+    function exportToExcel(button) {
+        const table = getRelatedTable(button);
+        const clonedTable = table.cloneNode(true);
+
+        clonedTable.querySelectorAll('.no_export').forEach(el => el.remove());
+        clonedTable.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+
+        const workbook = XLSX.utils.table_to_book(clonedTable);
+        XLSX.writeFile(workbook, generateFileName(table, 'xlsx'));
+
+        showToastSupp('success', 'Export Excel réussi !');
+    }
+
+    // Export Word
+    function exportToWord(button) {
+        try {
+            const table = getRelatedTable(button);
+            const clonedTable = table.cloneNode(true);
+
+            clonedTable.querySelectorAll('.no_export').forEach(el => el.remove());
+            clonedTable.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+
+            const { Document, Paragraph, Table, TableRow, TableCell, Packer, HeadingLevel } = docx;
+            const rows = [];
+            const tableRows = clonedTable.querySelectorAll('tr');
+
+            // En-têtes
+            const headerCells = [];
+            tableRows[0].querySelectorAll('th').forEach(th => {
+                headerCells.push(
+                    new TableCell({
+                        children: [new Paragraph({
+                            text: th.textContent,
+                            heading: HeadingLevel.HEADING_4
+                        })],
+                        shading: { fill: "DDDDDD" }
+                    })
+                );
+            });
+            rows.push(new TableRow({ children: headerCells }));
+
+            // Lignes
+            for (let i = 1; i < tableRows.length; i++) {
+                const cells = [];
+                tableRows[i].querySelectorAll('td').forEach(td => {
+                    cells.push(new TableCell({ children: [new Paragraph(td.textContent)] }));
+                });
+                rows.push(new TableRow({ children: cells }));
+            }
+
+            const doc = new Document({
+                sections: [{
+                    children: [
+                        new Paragraph({
+                            text: table.dataset.title || "Export",
+                            heading: HeadingLevel.HEADING_1
+                        }),
+                        new Paragraph({
+                            text: new Date().toLocaleDateString(),
+                            spacing: { after: 200 }
+                        }),
+                        new Table({ rows: rows, width: { size: 100, type: "PERCENTAGE" } })
+                    ]
+                }]
+            });
+
+            Packer.toBlob(doc).then(blob => {
+                saveAs(blob, generateFileName(table, 'docx'));
+                showToastSupp('success', 'Export Word réussi !');
+            });
+
+        } catch (error) {
+            console.error("Erreur lors de l'export Word:", error);
+            showToastSupp('error', 'Échec de l\'export Word');
+        }
+    }
+
+    // Export PDF
+    function exportToPDF(button) {
+        const table = getRelatedTable(button);
+        const clonedTable = table.cloneNode(true);
+
+        clonedTable.querySelectorAll('.no_export').forEach(el => el.remove());
+        clonedTable.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.appendChild(clonedTable);
+        document.body.appendChild(tempDiv);
+
+        html2canvas(tempDiv, { scale: 2, scrollX: 0, scrollY: 0 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jspdf.jsPDF('l', 'mm', 'a4');
+            const imgWidth = 290; 
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+
+            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            pdf.save(generateFileName(table, 'pdf'));
+
+            document.body.removeChild(tempDiv);
+            showToastSupp('success', 'Export PDF réussi !');
+        });
+    }
+
+});
+
 </script>

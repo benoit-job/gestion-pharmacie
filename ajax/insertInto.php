@@ -78,7 +78,7 @@ if (isset($_POST['nom']) && isset($_POST['prenom'])) {
     $adresse = "'".mysqli_real_escape_string($bdd, trim($_POST['adresse']))."'";
     $complement_adresse = isset($_POST['complement_adresse']) ? "'".mysqli_real_escape_string($bdd, trim($_POST['complement_adresse']))."'" : "NULL";
     $nationalite = "'".mysqli_real_escape_string($bdd, trim($_POST['nationalite']))."'";
-    $id_region = isset($_POST['id_region']) && is_numeric($_POST['id_region']) ? intval($_POST['id_region']) : "NULL";
+    // $id_region = isset($_POST['id_region']) && is_numeric($_POST['id_region']) ? intval($_POST['id_region']) : "NULL";
     $id_lieu_exercice = isset($_POST['id_lieu_exercice']) && is_numeric($_POST['id_lieu_exercice']) ? intval($_POST['id_lieu_exercice']) : "NULL";
     $telephone_fixe = isset($_POST['telephone_fixe']) ? "'".mysqli_real_escape_string($bdd, trim($_POST['telephone_fixe']))."'" : "NULL";
     $telephone_portable = "'".mysqli_real_escape_string($bdd, trim($_POST['telephone_portable']))."'";
@@ -90,6 +90,7 @@ if (isset($_POST['nom']) && isset($_POST['prenom'])) {
     $montant_souscrit_type1 = isset($_POST['montant_souscrit_type1']) && is_numeric($_POST['montant_souscrit_type1']) ? intval($_POST['montant_souscrit_type1']) : "NULL";
     $montant_souscrit_type2 = isset($_POST['montant_souscrit_type2']) && is_numeric($_POST['montant_souscrit_type2']) ? intval($_POST['montant_souscrit_type2']) : "NULL";
     $nombre_actions = isset($_POST['nombre_actions']) && is_numeric($_POST['nombre_actions']) ? intval($_POST['nombre_actions']) : "NULL";
+    $n_souscription = isset($_POST['n_souscription']) && is_numeric($_POST['n_souscription']) ? intval($_POST['n_souscription']) : "NULL";
     $date_souscription = !empty($_POST['date_souscription']) ? "'".mysqli_real_escape_string($bdd, $_POST['date_souscription'])."'" : "NULL";
     $id_user = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
 
@@ -109,16 +110,16 @@ if (isset($_POST['nom']) && isset($_POST['prenom'])) {
     // --- INSERTION ---
     $query = "INSERT INTO souscripteurs (
         id_user, id_type_souscripteur, civilite, nom, prenom, date_naissance, lieu_naissance,
-        adresse, code_postal, nationalite, id_region, id_lieu_exercice,
+        adresse, code_postal, nationalite, id_lieu_exercice,
         telephone_fixe, telephone_portable, email,
         nom_etablissement, secteur_activite, montant_souscrit, montant_souscrit_type1, montant_souscrit_type2,
-        nombre_actions, date_souscription, image_etablissement, date_insert
+        nombre_actions, n_souscription, date_souscription, image_etablissement, date_insert
     ) VALUES (
         $id_user, $id_type_souscripteur, $civilite, $nom, $prenom, $date_naissance, $lieu_naissance,
-        $adresse, $complement_adresse, $nationalite, $id_region, $id_lieu_exercice,
+        $adresse, $complement_adresse, $nationalite, $id_lieu_exercice,
         $telephone_fixe, $telephone_portable, $email,
         $nom_etablissement, $secteur_activite, $montant_souscrit, $montant_souscrit_type1, $montant_souscrit_type2,
-        $nombre_actions, $date_souscription, $image_etablissement, NOW()
+        $nombre_actions, $n_souscription, $date_souscription, $image_etablissement, NOW()
     )";
 
     $result = mysqli_query($bdd, $query);

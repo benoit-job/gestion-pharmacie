@@ -2,9 +2,20 @@
   include("includes/connexion_acces_page.php");
   include("includes/connexion_bdd.php");
   include("includes/fonctions.php");
-  $url = "add_souscripteur.php.php";
+  $url = "update_souscripteurs.php";
 ?>
+<?php
+   if (isset($_GET["id_souscripteur"])) 
+    {
+        $_SESSION["id_souscripteur"] = strip_tags(htmlspecialchars(trim( crypt_decrypt_chaine($_GET['id_souscripteur'], 'D') )));
+        reload_current_page(); 
+    }
 
+    $query = "SELECT * FROM souscripteurs
+                WHERE id_souscripteur =".$_SESSION["id_souscripteur"]."";
+    $resultat = mysqli_query($bdd, $query) or die("Requête non conforme");  
+    $souscripteur = mysqli_fetch_array($resultat)
+?>
 
 <!DOCTYPE html>
 <html data-navigation-type="default" data-navbar-horizontal-shape="default" lang="fr-FR" dir="ltr">
@@ -14,7 +25,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Nouveau souscripteur</title>
+    <title>Modifier souscripteur</title>
 
     <?php include('includes/php/includes-css.php');?>
     
@@ -52,16 +63,16 @@
 
         <div class="pb-3">
             <div class="mb-8">
-              <h2 class="mb-2">Nouveau souscripteur</h2>
-              <h5 class="text-body-tertiary fw-semibold">Ajouter un souscripteur</h5>
+              <h2 class="mb-2">Modifier souscripteur</h2>
+              <h5 class="text-body-tertiary fw-semibold">Modifier un souscripteur</h5>
             </div>
 
             <div class="page-section">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Nouveau Souscripteur</h5>
+                        <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Modifier Souscripteur</h5>
                     </div>
-                    <form id="form-nouveau-souscripteur" method="POST">
+                    <form id="formModifSouscripteur" method="POST" enctype="multipart/form-data">
                         <div class="card-body">
                             <!-- Section 1: Informations Personnelles (Repliable) -->
                             <div class="accordion mb-4" id="accordionInfosPerso">
@@ -76,41 +87,42 @@
                                             <div class="row g-3">
                                                 <div class="col-md-4">
                                                     <label class="form-label">Type Souscripteur <strong class="text-danger">*</strong></label>
-                                                    <select class="form-select organizerSingle" id="id_type_souscripteur" name="id_type_souscripteur" required>
-                                                        <option disabled selected>Choisissez ...</option> 
+                                                    <select class="form-select organizerSingle" id="id_type_souscripteur" name="id_type_souscripteur">
+                                                        <option disabled>Choisissez ...</option> 
                                                         <?php
                                                         $query = "SELECT id, UPPER(nom) AS nom FROM type_souscripteurs WHERE active = 'oui' ORDER BY type_souscripteurs.nom ASC";
                                                         $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
                                                         while ($region = mysqli_fetch_assoc($resultat)) {
-                                                            echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom']) . "</option>";
+                                                            $selected = ($region['id'] == $souscripteur['id_type_souscripteur']) ? 'selected' : '';
+                                                            echo "<option value='" . htmlspecialchars($region['id']) . "' $selected>" . htmlspecialchars($region['nom']) . "</option>";
                                                         }
                                                         ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Civilité <strong class="text-danger">*</strong></label>
-                                                    <select class="form-select organizerSingle" id="organizerSingle" name="civilite" required>
-                                                        <option value="" disabled selected>Sélectionnez une civilité...</option>
-                                                        <option value="M.">Monsieur (M.)</option>
-                                                        <option value="Mme">Madame (Mme)</option>
-                                                        <option value="Mlle">Mademoiselle (Mlle)</option>
+                                                    <select class="form-select organizerSingle" id="organizerSingle" name="civilite">
+                                                        <option value="" disabled>Sélectionnez une civilité...</option>
+                                                        <option value="M." <?= ($souscripteur['civilite'] == 'M.') ? 'selected' : '' ?>>Monsieur (M.)</option>
+                                                        <option value="Mme" <?= ($souscripteur['civilite'] == 'Mme') ? 'selected' : '' ?>>Madame (Mme)</option>
+                                                        <option value="Mlle" <?= ($souscripteur['civilite'] == 'Mlle') ? 'selected' : '' ?>>Mademoiselle (Mlle)</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Nom <strong class="text-danger">*</strong></label>
-                                                    <input type="text" class="form-control" name="nom" required>
+                                                    <input type="text" class="form-control" name="nom" value="<?= htmlspecialchars($souscripteur['nom'] ?? '') ?>" required>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Prénom <strong class="text-danger">*</strong></label>
-                                                    <input type="text" class="form-control" name="prenom" required>
+                                                    <input type="text" class="form-control" name="prenom" value="<?= htmlspecialchars($souscripteur['prenom'] ?? '') ?>" required>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Date de Naissance</label>
-                                                    <input type="date" class="form-control" name="date_naissance">
+                                                    <input type="date" class="form-control" name="date_naissance" value="<?= htmlspecialchars($souscripteur['date_naissance'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Lieu de Naissance</label>
-                                                    <input type="text" class="form-control" name="lieu_naissance">
+                                                    <input type="text" class="form-control" name="lieu_naissance" value="<?= htmlspecialchars($souscripteur['lieu_naissance'] ?? '') ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -131,53 +143,41 @@
                                             <div class="row g-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">Adresse <strong class="text-danger">*</strong></label>
-                                                    <input type="text" class="form-control" name="adresse" required>
+                                                    <input type="text" class="form-control" name="adresse" value="<?= htmlspecialchars($souscripteur['adresse'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Code postal</label>
-                                                    <input type="text" class="form-control" name="complement_adresse">
+                                                    <input type="text" class="form-control" name="complement_adresse" value="<?= htmlspecialchars($souscripteur['code_postal'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Nationalité <strong class="text-danger">*</strong></label>
-                                                    <input type="text" class="form-control" name="nationalite" required>
+                                                    <input type="text" class="form-control" name="nationalite" value="<?= htmlspecialchars($souscripteur['nationalite'] ?? '') ?>">
                                                 </div>
-                                                <!-- <div class="col-md-4">
-                                                    <label class="form-label">Région <strong class="text-danger">*</strong></label>
-                                                    <select class="form-select organizerSingle" id="id_region" name="id_region" required>
-                                                        <option disabled selected>Choisissez ...</option> 
-                                                        <?php
-                                                        $query = "SELECT id, UPPER(nom_region) AS nom_region FROM regions WHERE active = 'oui' ORDER BY nom_region";
-                                                        $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
-                                                        while ($region = mysqli_fetch_assoc($resultat)) {
-                                                            echo "<option value='" . htmlspecialchars($region['id']) . "'>" . htmlspecialchars($region['nom_region']) . "</option>";
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                </div> -->
                                                 <div class="col-md-4">
                                                     <label class="form-label">Lieu d'exercice <strong class="text-danger">*</strong></label>
-                                                    <select class="form-select organizerSingle" id="id_lieu_exercice" name="id_lieu_exercice" required>
-                                                        <option disabled selected>Choisissez ...</option> 
+                                                    <select class="form-select organizerSingle" id="id_lieu_exercice" name="id_lieu_exercice">
+                                                        <option disabled>Choisissez ...</option> 
                                                         <?php
                                                         $query = "SELECT id, UPPER(nom_lieu) AS nom_lieu FROM lieu_exercices WHERE active = 'oui' ORDER BY lieu_exercices.nom_lieu";
                                                         $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
                                                         while ($lieu_exercice = mysqli_fetch_assoc($resultat)) {
-                                                            echo "<option value='" . htmlspecialchars($lieu_exercice['id']) . "'>" . htmlspecialchars($lieu_exercice['nom_lieu']) . "</option>";
+                                                            $selected = ($lieu_exercice['id'] == $souscripteur['id_lieu_exercice']) ? 'selected' : '';
+                                                            echo "<option value='" . htmlspecialchars($lieu_exercice['id']) . "' $selected>" . htmlspecialchars($lieu_exercice['nom_lieu']) . "</option>";
                                                         }
                                                         ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Téléphone fixe</label>
-                                                    <input type="tel" class="form-control" name="telephone_fixe">
+                                                    <input type="tel" class="form-control" name="telephone_fixe" value="<?= htmlspecialchars($souscripteur['telephone_fixe'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Téléphone portable <strong class="text-danger">*</strong></label>
-                                                    <input type="tel" class="form-control" name="telephone_portable" required>
+                                                    <input type="tel" class="form-control" name="telephone_portable" value="<?= htmlspecialchars($souscripteur['telephone_portable'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Email</label>
-                                                    <input type="email" class="form-control" name="email">
+                                                    <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($souscripteur['email'] ?? '') ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -198,46 +198,46 @@
                                             <div class="row g-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">Nom de l'établissement <strong class="text-danger">*</strong></label>
-                                                    <input type="text" class="form-control" name="nom_etablissement" required>
+                                                    <input type="text" class="form-control" name="nom_etablissement" value="<?= htmlspecialchars($souscripteur['nom_etablissement'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Secteur d'activité <strong class="text-danger">*</strong></label>
-                                                    <select class="form-select organizerSingle" id="secteur_activite" name="secteur_activite" required>
-                                                        <option value="" disabled selected>Sélectionnez le secteur ...</option>
+                                                    <select class="form-select organizerSingle" id="secteur_activite" name="secteur_activite">
+                                                        <option value="" disabled>Sélectionnez le secteur ...</option>
                                                         <!-- Secteur public -->
-                                                        <option value="pharmacie hospitaliere publique">Pharmacie hospitalière publique</option>
-                                                        <option value="pharmacie sante publique">Pharmacie de la Santé Publique (PSP)</option>
-                                                        <option value="programme national">Programme national (VIH, palu, tuberculose…)</option>
+                                                        <option value="pharmacie hospitaliere publique" <?= ($souscripteur['secteur_activite'] == 'pharmacie hospitaliere publique') ? 'selected' : '' ?>>Pharmacie hospitalière publique</option>
+                                                        <option value="pharmacie sante publique" <?= ($souscripteur['secteur_activite'] == 'pharmacie sante publique') ? 'selected' : '' ?>>Pharmacie de la Santé Publique (PSP)</option>
+                                                        <option value="programme national" <?= ($souscripteur['secteur_activite'] == 'programme national') ? 'selected' : '' ?>>Programme national (VIH, palu, tuberculose…)</option>
                                                         <!-- Secteur privé -->
-                                                        <option value="pharmacie officine">Pharmacie d'officine (privée)</option>
-                                                        <option value="grossiste repartiteur">Grossiste répartiteur privé</option>
-                                                        <option value="parapharmacie">Parapharmacie</option>
-                                                        <option value="pharmacie privee hospitaliere">Pharmacie hospitalière privée (clinique)</option>
+                                                        <option value="pharmacie officine" <?= ($souscripteur['secteur_activite'] == 'pharmacie officine') ? 'selected' : '' ?>>Pharmacie d'officine (privée)</option>
+                                                        <option value="grossiste repartiteur" <?= ($souscripteur['secteur_activite'] == 'grossiste repartiteur') ? 'selected' : '' ?>>Grossiste répartiteur privé</option>
+                                                        <option value="parapharmacie" <?= ($souscripteur['secteur_activite'] == 'parapharmacie') ? 'selected' : '' ?>>Parapharmacie</option>
+                                                        <option value="pharmacie privee hospitaliere" <?= ($souscripteur['secteur_activite'] == 'pharmacie privee hospitaliere') ? 'selected' : '' ?>>Pharmacie hospitalière privée (clinique)</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Montant souscrit (FCFA)</label>
-                                                    <input type="number" class="form-control" name="montant_souscrit">
+                                                    <input type="number" class="form-control" name="montant_souscrit" value="<?= htmlspecialchars($souscripteur['montant_souscrit'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Montant souscrit type 1 (FCFA)</label>
-                                                    <input type="number" class="form-control" name="montant_souscrit_type1">
+                                                    <input type="number" class="form-control" name="montant_souscrit_type1" value="<?= htmlspecialchars($souscripteur['montant_souscrit_type1'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Montant souscrit type 2 (FCFA)</label>
-                                                    <input type="number" class="form-control" name="montant_souscrit_type2">
+                                                    <input type="number" class="form-control" name="montant_souscrit_type2" value="<?= htmlspecialchars($souscripteur['montant_souscrit_type2'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Nombre d'actions</label>
-                                                    <input type="number" class="form-control" name="nombre_actions">
+                                                    <input type="number" class="form-control" name="nombre_actions" value="<?= htmlspecialchars($souscripteur['nombre_actions'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Numéro de souscription </label>
-                                                    <input type="number" class="form-control" name="n_souscription" required>
+                                                    <input type="number" class="form-control" name="n_souscription" value="<?= htmlspecialchars($souscripteur['n_souscription'] ?? '') ?>">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Date de souscription <strong class="text-danger">*</strong></label>
-                                                    <input type="date" class="form-control" name="date_souscription" required>
+                                                    <input type="date" class="form-control" name="date_souscription" value="<?= htmlspecialchars($souscripteur['date_souscription'] ?? '') ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -267,13 +267,13 @@
                                                                 onclick="handleImageClick()">
                                                                 
                                                                 <!-- Aperçu de l'image qui remplit tout le cadre -->
-                                                                <img id="image_preview" src="" alt="Aperçu" 
-                                                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none;">
+                                                                <img id="image_preview" src="<?= !empty($souscripteur['image_etablissement']) ? 'fichiers/uploads/'.$souscripteur['image_etablissement'] : '' ?>" alt="Aperçu" 
+                                                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; <?= !empty($souscripteur['image_etablissement']) ? 'display: block;' : 'display: none;' ?>">
                                                                 
                                                                 <!-- Message par défaut centré qui disparaît COMPLÈTEMENT quand une image est sélectionnée -->
-                                                                <div id="default_icon" class="h-100 d-flex flex-column align-items-center justify-content-center">
+                                                                <div id="default_icon" class="h-100 d-flex flex-column align-items-center justify-content-center" <?= !empty($souscripteur['image_etablissement']) ? 'style="display: none;"' : '' ?>>
                                                                     <i class="fas fa-camera fa-3x text-secondary mb-2"></i>
-                                                                    <p class="mb-0 text-center">Cliquez pour ajouter une image</p>
+                                                                    <p class="mb-0 text-center">Cliquez pour modifier une image</p>
                                                                     <small class="text-muted">(Glisser-déposer possible)</small>
                                                                 </div>
                                                             </div>
@@ -290,7 +290,7 @@
                                                                 <button type="button" class="btn btn-sm btn-outline-primary" id="cameraBtn" onclick="handleCameraClick()">
                                                                     <i class="fas fa-camera me-1"></i> Prendre photo
                                                                 </button>
-                                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="resetImage()" id="resetBtn" style="display: none;">
+                                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="resetImage()" id="resetBtn" <?= !empty($souscripteur['image_etablissement']) ? '' : 'style="display: none;"' ?>>
                                                                     <i class="fas fa-trash me-1"></i> Supprimer
                                                                 </button>
                                                             </div>
@@ -304,13 +304,24 @@
                             </div>
 
                             <!-- Bouton d'enregistrement global -->
-                            <div class="d-flex justify-content-end mt-4">
-                                <button type="button" class="btn btn-outline-secondary me-3" id="btn-annuler-tout">
-                                    <i class="fas fa-eraser me-2"></i> Tout Annuler
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i> Enregistrer le Souscripteur
-                                </button>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <!-- Switch Actif à gauche -->
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="active" name="active" 
+                                        <?= isset($souscripteur['active']) && $souscripteur['active'] == 'oui' ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="active">Actif</label>
+                                </div>
+                                
+                                <!-- Boutons à droite -->
+                                <div>
+                                    <input type="hidden" name="id_souscripteur" value="<?= htmlspecialchars($_SESSION['id_souscripteur']) ?>">
+                                    <button type="button" class="btn btn-outline-secondary me-3" id="btn-annuler-tout">
+                                        <i class="fas fa-eraser me-2"></i> Tout Annuler
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" name="modifierSouscripteur" id="btn-modifier-souscripteur">
+                                        <i class="fas fa-save me-2"></i> Modifier le Souscripteur
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -460,21 +471,22 @@
     }
 </script>
 
+
 <script>
 $(document).ready(function() {
-  $('#form-nouveau-souscripteur').on('submit', function(e) {
+  $('#formModifSouscripteur').on('submit', function(e) {
     e.preventDefault();
 
     const submitBtn = $(this).find('button[type="submit"]');
     submitBtn.prop('disabled', true);
-    submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Insertion en cours...');
+    submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Update en cours...');
 
     let formData = new FormData(this);
 
     // On laisse tourner le spinner pendant 500 ms avant l'envoi
     setTimeout(function() {
       $.ajax({
-        url: 'ajax/insertInto.php',
+        url: 'ajax/update.php',
         type: 'POST',
         data: formData,
         processData: false,
@@ -482,11 +494,11 @@ $(document).ready(function() {
         success: function(response) {
           console.log("Réponse serveur:", response);
           if (response.trim() === 'success') {
-            showToast('success', 'Souscripteur enregistré avec succès');
-            $('#form-nouveau-souscripteur')[0].reset();
+            showToastSupp('success', 'Modification réussie !');
+            $('#formModifSouscripteur')[0].reset();
             // Attendre 4 secondes avant de montrer la 2e notification
             setTimeout(function() {
-                showToast('success', 'Redirection en cours...');
+                showToastSupp('success', 'Redirection en cours...');
                 // Attendre 1 seconde pour laisser le toast s'afficher avant de rediriger
                 setTimeout(function() {
                     window.location.href = 'liste_souscripteurs.php';
@@ -494,15 +506,15 @@ $(document).ready(function() {
 
             }, 4000);
           } else {
-            showToast('error', 'Une erreur est survenue');
+            showToastSupp('error', 'Une erreur est survenue');
           }
         },
         error: function() {
-          showToast('error', 'Erreur de connexion au serveur');
+          showToastSupp('error', 'Erreur de connexion au serveur');
         },
         complete: function() {
           submitBtn.prop('disabled', false);
-          submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer le Souscripteur');
+          submitBtn.html('<i class="fas fa-save me-2"></i> Modifier le Souscripteur');
         }
       });
     }, 2000); // 0,5 seconde de spinner avant l'envoi

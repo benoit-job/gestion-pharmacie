@@ -39,10 +39,7 @@ if (isset($_POST["supprimerType"])) {
     $id_type = crypt_decrypt_chaine($_POST["id_type"], 'D');
     
         // Récupération du nom de l'utilisateur
-        $userQuery = "SELECT pseudo FROM users WHERE id = ".$_SESSION['user']['id']." LIMIT 1";
-        $userResult = mysqli_query($bdd, $userQuery);
-        $user = mysqli_fetch_assoc($userResult);
-        $nom_user = mysqli_real_escape_string($bdd, $user['pseudo']);
+        $nom_user = getUserPseudo($bdd, $_SESSION['user']['id']);
 
     // Récupérer les données actuelles de la type
     $selectQuery = "SELECT * FROM type_souscripteurs WHERE id = $id_type";
