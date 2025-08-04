@@ -150,7 +150,7 @@
   <div class="parent-wrapper label-1">
     <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="versements">
       <li class="nav-item">
-        <a class="nav-link" href="nouveau_versement.php" data-bs-toggle="" aria-expanded="false">
+        <a class="nav-link" href="add_versement.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-plus text-success"></i></span>
             <span class="nav-link-text">Nouveau versement</span>
