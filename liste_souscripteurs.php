@@ -117,7 +117,7 @@ if (isset($_POST["supprimerSouscripteur"])) {
 
         <div class="pb-3">
             <div class="mb-8">
-              <h2 class="mb-2">Liste des souscripteurs</h2>
+              <h3 class="mb-2">Liste des souscripteurs</h3>
               <h5 class="text-body-tertiary fw-semibold">Gérer vos liste des souscripteurs </h5>
             </div>
 

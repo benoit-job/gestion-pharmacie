@@ -113,7 +113,7 @@ if (isset($_POST["supprimerLieu"])) {
 
         <div class="pb-3">
             <div class="mb-8">
-              <h2 class="mb-2">Lieu Pharmacie</h2>
+              <h3 class="mb-2">Lieu Pharmacie</h3>
               <h5 class="text-body-tertiary fw-semibold">Gérer vos lieu Pharmacie </h5>
             </div>
 

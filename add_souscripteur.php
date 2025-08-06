@@ -52,7 +52,7 @@
 
         <div class="pb-3">
             <div class="mb-8">
-              <h2 class="mb-2">Nouveau souscripteur</h2>
+              <h3 class="mb-2">Nouveau souscripteur</h3>
               <h5 class="text-body-tertiary fw-semibold">Ajouter un souscripteur</h5>
             </div>
 
@@ -461,51 +461,51 @@
 </script>
 
 <script>
-$(document).ready(function() {
-  $('#form-nouveau-souscripteur').on('submit', function(e) {
-    e.preventDefault();
+    $(document).ready(function() {
+    $('#form-nouveau-souscripteur').on('submit', function(e) {
+        e.preventDefault();
 
-    const submitBtn = $(this).find('button[type="submit"]');
-    submitBtn.prop('disabled', true);
-    submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Insertion en cours...');
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.prop('disabled', true);
+        submitBtn.html('<span class="fas fa-spinner fa-spin me-2"></span>Insertion en cours...');
 
-    let formData = new FormData(this);
+        let formData = new FormData(this);
 
-    // On laisse tourner le spinner pendant 500 ms avant l'envoi
-    setTimeout(function() {
-      $.ajax({
-        url: 'ajax/insertInto.php',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-          console.log("Réponse serveur:", response);
-          if (response.trim() === 'success') {
-            showToast('success', 'Souscripteur enregistré avec succès');
-            $('#form-nouveau-souscripteur')[0].reset();
-            // Attendre 4 secondes avant de montrer la 2e notification
-            setTimeout(function() {
-                showToast('success', 'Redirection en cours...');
-                // Attendre 1 seconde pour laisser le toast s'afficher avant de rediriger
+        // On laisse tourner le spinner pendant 500 ms avant l'envoi
+        setTimeout(function() {
+        $.ajax({
+            url: 'ajax/insertInto.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+            console.log("Réponse serveur:", response);
+            if (response.trim() === 'success') {
+                showToast('success', 'Souscripteur enregistré avec succès');
+                $('#form-nouveau-souscripteur')[0].reset();
+                // Attendre 4 secondes avant de montrer la 2e notification
                 setTimeout(function() {
-                    window.location.href = 'liste_souscripteurs.php';
-                }, 1000);
+                    showToast('success', 'Redirection en cours...');
+                    // Attendre 1 seconde pour laisser le toast s'afficher avant de rediriger
+                    setTimeout(function() {
+                        window.location.href = 'liste_souscripteurs.php';
+                    }, 1000);
 
-            }, 4000);
-          } else {
-            showToast('error', 'Une erreur est survenue');
-          }
-        },
-        error: function() {
-          showToast('error', 'Erreur de connexion au serveur');
-        },
-        complete: function() {
-          submitBtn.prop('disabled', false);
-          submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer le Souscripteur');
-        }
-      });
-    }, 2000); // 0,5 seconde de spinner avant l'envoi
-  });
-});
+                }, 4000);
+            } else {
+                showToast('error', 'Une erreur est survenue');
+            }
+            },
+            error: function() {
+            showToast('error', 'Erreur de connexion au serveur');
+            },
+            complete: function() {
+            submitBtn.prop('disabled', false);
+            submitBtn.html('<i class="fas fa-save me-2"></i> Enregistrer le Souscripteur');
+            }
+        });
+        }, 2000); // 0,5 seconde de spinner avant l'envoi
+    });
+    });
 </script>

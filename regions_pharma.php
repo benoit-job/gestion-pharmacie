@@ -102,7 +102,7 @@ if (isset($_POST["supprimerRegion"])) {
 
         <div class="pb-3">
             <div class="mb-8">
-              <h2 class="mb-2">Région Pharmacie</h2>
+              <h3 class="mb-2">Région Pharmacie</h3>
               <h5 class="text-body-tertiary fw-semibold">Gérer vos région Pharmacie </h5>
             </div>
 

@@ -91,4 +91,39 @@ if (isset($_POST['nom']) && isset($_POST['prenom'])) {
 
     echo $result ? 'success' : 'fail: ' . mysqli_error($bdd);
 }
+
+
+if (!isset($_POST['versements'])) {
+    exit('no_data');
+}
+
+$data = json_decode($_POST['versements'], true);
+if (!is_array($data) || empty($data)) {
+    exit('no_data');
+}
+
+$success = true;
+
+foreach ($data as $row) {
+    $id_versement = intval(crypt_decrypt_chaine($row['id_versement'], 'D')); 
+    $montant = floatval($row['montant']);
+    $date = mysqli_real_escape_string($bdd, $row['date']);
+    $nature = mysqli_real_escape_string($bdd, $row['nature']);
+
+    // ⚡ UPDATE uniquement
+    $query = "UPDATE versements_souscripteurs
+              SET montant = $montant,
+                  date = '$date',
+                  nature = '$nature',
+                  date_update = NOW()
+              WHERE id = $id_versement";
+
+    if (!mysqli_query($bdd, $query)) {
+        $success = false;
+        break;
+    }
+}
+
+echo $success ? 'success' : 'fail: ' . mysqli_error($bdd);
+
 ?>

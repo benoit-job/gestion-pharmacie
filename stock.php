@@ -3,21 +3,6 @@ include("includes/connexion_acces_page.php");
 include("includes/connexion_bdd.php");
 include("includes/fonctions.php");
 $url = "add_souscrit_versement.php";
-
-if(isset($_GET["id_souscripteur"]) && !empty($_GET["id_souscripteur"])) {
-    $_SESSION["id_s"] = strip_tags(htmlspecialchars(trim(crypt_decrypt_chaine($_GET["id_souscripteur"], 'D'))));
-    reload_current_page();
-}
-
-// Récupération des informations du souscripteur
-$souscripteur_info = [];
-if(isset($_SESSION["id_s"])) {
-    $query = "SELECT id_souscripteur, UPPER(CONCAT(nom, ' ', prenom)) AS nom_complet 
-              FROM souscripteurs 
-              WHERE id_souscripteur = ".intval($_SESSION["id_s"]);
-    $result = mysqli_query($bdd, $query);
-    $souscripteur_info = mysqli_fetch_assoc($result);
-}
 ?>
 
 <!DOCTYPE html>

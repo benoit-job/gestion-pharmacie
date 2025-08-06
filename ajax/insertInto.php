@@ -130,5 +130,49 @@ if (isset($_POST['nom']) && isset($_POST['prenom'])) {
         echo 'fail: ' . mysqli_error($bdd);
     }
 }
+// INSERTION VERSEMENT
+
+if (!isset($_POST['versements'])) {
+    exit('no_data');
+}
+
+$data = json_decode($_POST['versements'], true);
+if (!is_array($data) || empty($data)) {
+    exit('no_data');
+}
+
+$success = true;
+
+foreach ($data as $row) {
+    $id_souscripteur = intval($row['id_souscripteur']);
+    $montant = floatval($row['montant']);
+    $date = mysqli_real_escape_string($bdd, $row['date']);
+    $nature = mysqli_real_escape_string($bdd, $row['nature']);
+    $id_user = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+
+    // 🔹 1. Récupérer le dernier ordre pour ce souscripteur
+    $lastOrdreQuery = "SELECT MAX(ordre) AS dernier_ordre 
+                       FROM versements_souscripteurs 
+                       WHERE id_souscripteur = $id_souscripteur";
+    $lastOrdreResult = mysqli_query($bdd, $lastOrdreQuery);
+    $lastOrdreData = mysqli_fetch_assoc($lastOrdreResult);
+    $dernier_ordre = $lastOrdreData['dernier_ordre'] ? intval($lastOrdreData['dernier_ordre']) : 0;
+
+    // 🔹 2. Définir le prochain ordre
+    $nouvel_ordre = $dernier_ordre + 1;
+
+    // 🔹 3. Insertion avec ordre unique
+    $query = "INSERT INTO versements_souscripteurs 
+              (id_user, id_souscripteur, ordre, montant, date, nature, date_insert) 
+              VALUES ($id_user, $id_souscripteur, $nouvel_ordre, $montant, '$date', '$nature', NOW())";
+
+    $result = mysqli_query($bdd, $query);
+    if (!$result) {
+        $success = false;
+        break; // Si une insertion échoue, on stoppe
+    }
+}
+
+echo $success ? 'success' : 'fail: ' . mysqli_error($bdd);
 
 ?>

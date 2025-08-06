@@ -2,7 +2,37 @@
   include("includes/connexion_acces_page.php");
   include("includes/connexion_bdd.php");
   include("includes/fonctions.php");
-  $url = "regions_pharma.php";
+  $url = "add_versement.php";
+?>
+<?php
+
+if (isset($_GET['id_souscripteur']) && !empty($_GET['id_souscripteur'])) {
+    $_SESSION['id_souscripteur'] = intval($_GET['id_souscripteur']);
+}
+
+
+
+     //DELETE FROM
+if (isset($_POST["supprimerVersement"])) {
+    $id_versement = crypt_decrypt_chaine($_POST["id_versement"], 'D');
+
+    $deleteQuery = "DELETE FROM versements_souscripteurs WHERE id = ".intval($id_versement);
+    $result = mysqli_query($bdd, $deleteQuery);
+    
+    if($result) {
+        $_SESSION['toast'] = [
+            'type' => 'success',
+            'message' => 'Versement supprimée avec succès'
+        ];
+    } else {
+        $_SESSION['toast'] = [
+            'type' => 'error',
+            'message' => 'Erreur lors de la suppression de la lieu: '
+        ];
+    }
+    
+    reload_current_page();
+}
 ?>
 
 
@@ -46,7 +76,7 @@
 
         <div class="pb-3">
             <div class="mb-8">
-              <h2 class="mb-2">Versement souscripteur</h2>
+              <h3 class="mb-2">Versement souscripteur</h3>
               <h5 class="text-body-tertiary fw-semibold">Gérer vos versement souscripteur </h5>
             </div>
 
@@ -61,12 +91,17 @@
                                 <select class="form-select organizerSingle shadow-sm" id="id_souscripteur" name="id_souscripteur" style="border-radius: 20px; border: 1px solid #ced4da; padding: 8px 15px;">
                                     <option disabled selected>Choisissez un souscripteur...</option>
                                     <?php
-                                    $query = "SELECT id_souscripteur, UPPER(CONCAT(nom, ' ', prenom)) AS nom_souscripteur FROM souscripteurs WHERE active = 'oui' ORDER BY souscripteurs.nom, souscripteurs.prenom ASC";
-                                    $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
-                                    while ($souscripteur = mysqli_fetch_assoc($resultat)) {
-                                        $selected = (isset($_GET['id_souscripteur']) && $_GET['id_souscripteur'] == $souscripteur['id_souscripteur']) ? 'selected' : '';
-                                        echo "<option value='" . htmlspecialchars($souscripteur['id_souscripteur']) . "' $selected>" . htmlspecialchars($souscripteur['nom_souscripteur']) . "</option>";
-                                    }
+                                        $selectedId = isset($_SESSION['id_souscripteur']) ? $_SESSION['id_souscripteur'] : 0;
+                                        $query = "SELECT id_souscripteur, UPPER(CONCAT(nom, ' ', prenom)) AS nom_souscripteur 
+                                                FROM souscripteurs 
+                                                WHERE active = 'oui' 
+                                                ORDER BY souscripteurs.nom, souscripteurs.prenom ASC";
+                                        $resultat = mysqli_query($bdd, $query) or die("Erreur SQL");
+                                        while ($souscripteur = mysqli_fetch_assoc($resultat)) {
+                                            $selected = ($selectedId == $souscripteur['id_souscripteur']) ? 'selected' : '';
+                                            echo "<option value='" . htmlspecialchars($souscripteur['id_souscripteur']) . "' $selected>" . htmlspecialchars($souscripteur['nom_souscripteur']) . "</option>";
+                                        }
+
                                     ?>
                                 </select>
                                 <i class="fas fa-chevron-down position-absolute end-0 top-50 translate-middle-y me-3 text-secondary"></i>
@@ -89,19 +124,57 @@
                             <thead class="thead-">
                             <tr style="font-size: 0.8rem;">
                                 <th>N</th>
-                                <th>Pseudo</th>
-                                <th>Contact</th>
-                                <th>Date enreg</th>
+                                <th>DATE VERSEMENT</th>
+                                <th>NATURE</th>
+                                <th>MONTANT</th>
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
-
+                                <?php 
+                                $id_souscripteur = $_SESSION['id_souscripteur'] ?? 0; 
+                                $total = 0;
+                                $query = "SELECT *, DATE_FORMAT(date, '%d/%m/%Y') AS date_formatted
+                                        FROM versements_souscripteurs WHERE id_souscripteur = ".$id_souscripteur."  ORDER BY versements_souscripteurs.date DESC";
+                                $resultat = mysqli_query($bdd, $query) or die("Erreur de requête");
+                                $ligne = 0;
+                                while($versement = mysqli_fetch_array($resultat)) {      
+                                    $total += $versement["montant"];
+                                    echo "<tr>
+                                            <td>".++$ligne."</td>
+                                            <td>".htmlspecialchars($versement["date_formatted"])."</td>
+                                            <td>".htmlspecialchars($versement["nature"])."</td>
+                                            <td>".number_format($versement["montant"], 0, ',', ' ')." FCFA</td>
+                                            <td class='text-end'>
+                                                <form method='post' action='".$url."' style='display:inline;'>
+                                                    <input type='hidden' name='id_versement' value='".crypt_decrypt_chaine($versement['id'], 'C')."'>
+                                                    
+                                                    <button type='button' class='btn btn-light btn-sm btn-supprimer' 
+                                                        data-id='".crypt_decrypt_chaine($versement['id'], 'C')."'
+                                                        data-type='versement'>
+                                                        <i class='fas fa-trash-alt me-1'></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>";
+                                }
+                                if ($total > 0) {
+                                    echo "<tr class='fw-bold'>
+                                            <td><strong>TOTAL</strong></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><strong>".number_format($total, 0, ',', ' ')." FCFA</strong></td>
+                                            <td></td>
+                                          </tr>";
+                                } else {
+                                    echo "<tr><td colspan='5' class='text-center'>Aucun versement trouvé.</td></tr>";
+                                }
+                            ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
+            </div>  
 
         </div>
 
