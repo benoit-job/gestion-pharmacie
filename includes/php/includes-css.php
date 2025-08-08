@@ -183,6 +183,226 @@
         background: #555;
       }
     </style>
+<style>
+    .export-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-btn {
+            position: relative;
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            transform-origin: center;
+        }
+
+        .export-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .export-btn:hover::before {
+            left: 100%;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .export-btn:active {
+            transform: translateY(-4px) scale(1.05);
+            transition: all 0.1s ease;
+        }
+
+        /* Bouton Excel */
+        .excel-btn {
+            background: linear-gradient(135deg, #1d7347 0%, #4caf50 100%);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .excel-btn:hover {
+            background: linear-gradient(135deg, #2e8b57 0%, #66bb6a 100%);
+            border-color: rgba(76, 175, 80, 0.6);
+        }
+
+        /* Bouton Word */
+        .word-btn {
+            background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .word-btn:hover {
+            background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+            border-color: rgba(33, 150, 243, 0.6);
+        }
+
+        /* Bouton PDF */
+        .pdf-btn {
+            background: linear-gradient(135deg, #c62828 0%, #f44336 100%);
+            border: 2px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .pdf-btn:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #ef5350 100%);
+            border-color: rgba(244, 67, 54, 0.6);
+        }
+
+        /* Icônes */
+        .export-btn span {
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover span {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Animation de flottement */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-float:nth-child(2) {
+            animation-delay: -1s;
+        }
+
+        .animate-float:nth-child(3) {
+            animation-delay: -2s;
+        }
+
+        /* Tooltip moderne */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-wrapper::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -45px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tooltip-wrapper::before {
+            content: '';
+            position: absolute;
+            bottom: -37px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            border: 6px solid transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tooltip-wrapper:hover::after,
+        .tooltip-wrapper:hover::before {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Effet de particules (optionnel) */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-float 4s linear infinite;
+        }
+
+        @keyframes particle-float {
+            0% {
+                opacity: 0;
+                transform: translateY(0px) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .export-btn {
+                width: 60px;
+                height: 60px;
+                margin: 0 10px !important;
+            }
+            
+            .export-btn span {
+                font-size: 1.2rem;
+            }
+            
+            .export-container {
+                padding: 20px;
+            }
+        }
+
+        /* Titre décoratif */
+        .title {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+    </style>
     
     <script>
       var phoenixIsRTL = window.config.config.phoenixIsRTL;

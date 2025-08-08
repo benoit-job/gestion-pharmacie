@@ -90,6 +90,7 @@ if (isset($_POST['nom']) && isset($_POST['prenom'])) {
     $result = mysqli_query($bdd, $query);
 
     echo $result ? 'success' : 'fail: ' . mysqli_error($bdd);
+    exit;
 }
 
 

@@ -34,6 +34,8 @@
 <!-- html2canvas et jsPDF pour PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
 
 
 <script>
@@ -606,31 +608,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Export PDF
     function exportToPDF(button) {
-        const table = getRelatedTable(button);
-        const clonedTable = table.cloneNode(true);
+    const table = getRelatedTable(button);
+    const clonedTable = table.cloneNode(true);
 
-        clonedTable.querySelectorAll('.no_export').forEach(el => el.remove());
-        clonedTable.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+    clonedTable.querySelectorAll('.no_export').forEach(el => el.remove());
+    clonedTable.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
 
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        tempDiv.appendChild(clonedTable);
-        document.body.appendChild(tempDiv);
+    const headers = [];
+    const body = [];
 
-        html2canvas(tempDiv, { scale: 2, scrollX: 0, scrollY: 0 }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('l', 'mm', 'a4');
-            const imgWidth = 290; 
-            const imgHeight = canvas.height * imgWidth / canvas.width;
+    const headerCells = clonedTable.querySelectorAll('thead tr th');
+    headerCells.forEach(th => {
+        headers.push(th.textContent.trim());
+    });
 
-            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-            pdf.save(generateFileName(table, 'pdf'));
-
-            document.body.removeChild(tempDiv);
-            showToastSupp('success', 'Export PDF réussi !');
+    const rows = clonedTable.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach(td => {
+            rowData.push(td.textContent.trim());
         });
-    }
+        body.push(rowData);
+    });
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+
+    doc.setFontSize(14);
+    doc.text(table.dataset.title || "Export", 14, 15);
+
+    doc.autoTable({
+        head: [headers],
+        body: body,
+        startY: 20,
+        styles: {
+            fontSize: 8,
+            cellPadding: 2,
+        },
+        headStyles: {
+            fillColor: [221, 221, 221],
+        },
+        theme: 'grid'
+    });
+
+    doc.save(generateFileName(table, 'pdf'));
+    showToastSupp('success', 'Export PDF réussi !');
+}
 
 });
 

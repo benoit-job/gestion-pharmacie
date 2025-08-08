@@ -169,15 +169,15 @@
         <a class="nav-link" href="modif_versements.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-edit text-warning"></i></span>
-            <span class="nav-link-text">Modifications</span>
+            <span class="nav-link-text">Modififcations</span>
           </div>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="suivi_paiements.php" data-bs-toggle="" aria-expanded="false">
+        <a class="nav-link" href="suivi_versements.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-chart-pie text-primary"></i></span>
-            <span class="nav-link-text">Suivi paiements</span>
+            <span class="nav-link-text">Suivi versements</span>
           </div>
         </a>
       </li>
