@@ -18,6 +18,7 @@ include("includes/fonctions.php");
         .pivot-table td, .pivot-table th { white-space: nowrap; }
         .highlight { background-color: #fff2cc !important; }
     </style>
+    
 </head>
 
 <body>
@@ -30,50 +31,6 @@ include("includes/fonctions.php");
                 <div class="mb-8">
                     <h3 class="mb-2">Tableau croisé des souscripteurs</h3>
                     <h5 class="text-body-tertiary fw-semibold">Analyse multidimensionnelle des données</h5>
-                </div>
-
-                <!-- Contrôles du tableau croisé -->
-                <div class="card mb-6">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Configuration du tableau croisé</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="pivotConfigForm">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Lignes</label>
-                                    <select class="form-select" name="rowField" id="rowField">
-                                        <option value="region">Région</option>
-                                        <option value="genre">Genre</option>
-                                        <option value="secteur">Secteur d'activité</option>
-                                        <option value="annee">Année de souscription</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Colonnes</label>
-                                    <select class="form-select" name="colField" id="colField">
-                                        <option value="genre">Genre</option>
-                                        <option value="region">Région</option>
-                                        <option value="secteur">Secteur d'activité</option>
-                                        <option value="montant">Tranche de montant</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Valeur</label>
-                                    <select class="form-select" name="valueField" id="valueField">
-                                        <option value="count">Nombre</option>
-                                        <option value="sum_montant">Montant total</option>
-                                        <option value="avg_montant">Moyenne</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <button type="button" class="btn btn-primary" onclick="updatePivotTable()">
-                                        <i class="fas fa-sync me-2"></i> Générer le tableau
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
                 </div>
 
                 <!-- Tableau croisé dynamique -->
