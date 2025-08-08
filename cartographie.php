@@ -90,9 +90,9 @@ include("includes/fonctions.php");
                     </div>
                 </div>
             </div>
-        </div>
         
         <?php include('includes/php/footer.php');?>
+        </div>
     </main>
 
     <?php include('includes/php/includes-js.php');?>

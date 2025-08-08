@@ -14,7 +14,7 @@
 
 <!-- Tableau de Bord -->
 <div class="nav-item-wrapper">
-  <a class="nav-link label-1" href="dashboard.php" role="button" data-bs-toggle="" aria-expanded="false">
+  <a class="nav-link label-1" href="accueil.php" role="button" data-bs-toggle="" aria-expanded="false">
     <div class="d-flex align-items-center">
       <span class="nav-link-icon icon-dashboard"><i class="fas fa-chart-line"></i></span>
       <span class="nav-link-text-wrapper"><span class="nav-link-text">Tableau de Bord</span></span>
@@ -225,26 +225,6 @@
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-table text-warning"></i></span>
             <span class="nav-link-text">Tableau croisé</span>
-          </div>
-        </a>
-      </li>
-      <li class="nav-item">
-        <hr class="my-2">
-        <small class="text-muted ps-3">Exports</small>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="export_excel.php" data-bs-toggle="" aria-expanded="false">
-          <div class="d-flex align-items-center">
-            <span class="nav-link-icon"><i class="fas fa-file-excel text-success"></i></span>
-            <span class="nav-link-text">Export Excel</span>
-          </div>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="export_pdf.php" data-bs-toggle="" aria-expanded="false">
-          <div class="d-flex align-items-center">
-            <span class="nav-link-icon"><i class="fas fa-file-pdf text-danger"></i></span>
-            <span class="nav-link-text">Export PDF</span>
           </div>
         </a>
       </li>

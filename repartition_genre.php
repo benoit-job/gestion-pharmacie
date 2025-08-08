@@ -76,7 +76,7 @@ include("includes/fonctions.php");
                                                 $percentage = round(($row['nombre'] / $total_genre) * 100, 1);
                                                 echo "<tr>
                                                         <td>".htmlspecialchars($row['genre'])."</td>
-                                                        <td>".number_format($row['nombre'], 0, ',', ' ')."</td>
+                                                        <td>".number_format((float)($row['nombre'] ?? 0), 0, ',', '')."</td>
                                                         <td>
                                                             <div class='progress' style='height: 20px;'>
                                                                 <div class='progress-bar' role='progressbar' style='width: $percentage%' aria-valuenow='$percentage' aria-valuemin='0' aria-valuemax='100'>$percentage%</div>
@@ -96,15 +96,30 @@ include("includes/fonctions.php");
                                     <?php
                                     mysqli_data_seek($result, 0); // Reset le pointeur du résultat
                                     while($row = mysqli_fetch_array($result)) {
+                                        // Déterminer le libellé et la couleur en fonction du genre
+                                        $genre = htmlspecialchars($row['genre']);
+                                        $couleur = '';
+                                        
+                                        if(strtolower($genre) == 'm.') {
+                                            $libelle = 'HOMME';
+                                            $couleur = 'border-left: 4px solid #36b9cc;'; // Bleu
+                                        } elseif(strtolower($genre) == 'mme') {
+                                            $libelle = 'FEMME';
+                                            $couleur = 'border-left: 4px solid #f6c23e;'; // Jaune
+                                        } elseif(strtolower($genre) == 'mlle') {
+                                            $libelle = 'MADEMOISSELLE';
+                                            $couleur = 'border-left: 4px solid #858796;'; // Gris
+                                        }
+                                        
                                         echo "<div class='col-md-6 mb-3'>
-                                                <div class='card border-0 bg-light'>
+                                                <div class='card border-0 bg-light' style='$couleur'>
                                                     <div class='card-body p-3'>
-                                                        <h6 class='mb-1'>".htmlspecialchars($row['genre'])."</h6>
-                                                        <p class='mb-0 text-700'>Total: ".number_format($row['total_montant'], 0, ',', ' ')." FCFA</p>
-                                                        <p class='mb-0 text-700'>Moyenne: ".number_format($row['moyenne_montant'], 0, ',', ' ')." FCFA</p>
+                                                        <h6 class='mb-1'>$libelle</h6>
+                                                        <p class='mb-0 text-700'>Total: ".number_format((float)($row['total_montant'] ?? 0), 0, ',', '')." FCFA</p>
+                                                        <p class='mb-0 text-700'>Moyenne: ".number_format((float)($row['moyenne_montant'] ?? 0), 0, ',', '')." FCFA</p>
                                                     </div>
                                                 </div>
-                                              </div>";
+                                            </div>";
                                     }
                                     ?>
                                 </div>
@@ -180,75 +195,75 @@ include("includes/fonctions.php");
                     </div>
                 </div>
             </div>
-        </div>
 
         <?php include('includes/php/footer.php');?>
+        </div>
     </main>
 
     <?php include('includes/php/includes-js.php');?>
 
-    <!-- Script pour le graphique genre -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const genderCtx = document.getElementById('genderChart').getContext('2d');
+   <!-- Script pour le graphique genre -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    
+    <?php
+    // Requête pour les données de genre
+    $query = "SELECT civilite as genre, COUNT(*) as nombre 
+             FROM souscripteurs 
+             GROUP BY civilite";
+    $result = mysqli_query($bdd, $query);
+    
+    $labels = [];
+    $data = [];
+    $colors = [];
+    
+    while($row = mysqli_fetch_array($result)) {
+        $labels[] = "'" . htmlspecialchars($row['genre'], ENT_QUOTES) . "'";
+        $data[] = $row['nombre'];
         
-        <?php
-        // Requête pour les données de genre
-        $query = "SELECT civilite as genre, COUNT(*) as nombre 
-                 FROM souscripteurs 
-                 GROUP BY civilite";
-        $result = mysqli_query($bdd, $query);
-        
-        $labels = [];
-        $data = [];
-        $colors = [];
-        
-        while($row = mysqli_fetch_array($result)) {
-            $labels[] = "'".htmlspecialchars($row['genre'])."'";
-            $data[] = $row['nombre'];
-            
-            // Couleurs différentes selon le genre
-            if(strtolower($row['genre']) == 'homme') {
-                $colors[] = "'#36b9cc'";
-            } elseif(strtolower($row['genre']) == 'femme') {
-                $colors[] = "'#f6c23e'";
-            } else {
-                $colors[] = "'#858796'";
-            }
+        // Couleurs différentes selon le genre
+        if(strtolower($row['genre']) == 'm.') {
+            $colors[] = "'#36b9cc'";
+        } elseif(strtolower($row['genre']) == 'mme') {
+            $colors[] = "'#f6c23e'";
+        } else {
+            $colors[] = "'#858796'";
         }
-        ?>
-        
-        const genderChart = new Chart(genderCtx, {
-            type: 'pie',
-            data: {
-                labels: [<?= implode(',', $labels) ?>],
-                datasets: [{
-                    data: [<?= implode(',', $data) ?>],
-                    backgroundColor: [<?= implode(',', $colors) ?>],
-                    hoverBackgroundColor: [<?= implode(',', $colors) ?>],
-                    hoverBorderColor: "rgba(234, 236, 244, 1)",
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${label}: ${value} (${percentage}%)`;
-                            }
+    }
+    ?>
+    
+    const genderChart = new Chart(genderCtx, {
+        type: 'pie',
+        data: {
+            labels: [<?= implode(',', $labels) ?>],
+            datasets: [{
+                data: [<?= implode(',', $data) ?>],
+                backgroundColor: [<?= implode(',', $colors) ?>],
+                hoverBackgroundColor: [<?= implode(',', $colors) ?>],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
                         }
                     }
-                },
+                }
             },
-        });
-    </script>
+        },
+    });
+</script>
 </body>
 </html>
