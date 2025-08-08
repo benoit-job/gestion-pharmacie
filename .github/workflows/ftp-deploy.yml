@@ -1,9 +1,12 @@
 name: Déploiement FTP automatique
 
 on:
+ name: Déploiement FTP automatique
+
+on:
   push:
     branches:
-      - main
+      - main  
 
 jobs:
   ftp-deploy:
@@ -16,9 +19,9 @@ jobs:
       - name: Déployer via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.0.0
         with:
-          server: ftp.rca-emergency.com
+          server: ftp.rca-emergency.com      
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /htdocs/pharma.rca-emergency.com
-/
+          local-dir: ./                     
+          server-dir: /htdocs/pharma.rca-emergency.com/  
+
