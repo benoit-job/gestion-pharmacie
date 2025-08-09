@@ -57,7 +57,7 @@ while($row = mysqli_fetch_assoc($result)) {
         .table-hover tbody tr:hover { background-color: rgba(44, 123, 229, 0.05); }
         .total-cell { font-weight: bold; background-color: #f8f9fa; }
         .month-cell { min-width: 100px; text-align: center; }
-        .souscripteur-cell { position: sticky; left: 0; background: white; z-index: 1; }
+        .souscripteur-cell { left: 0; background: white; z-index: 1; }
         .badge-count { background-color: #2c7be5; color: white; border-radius: 10px; padding: 2px 8px; }
         .no-versements { color: #6c757d; font-style: italic; }
         

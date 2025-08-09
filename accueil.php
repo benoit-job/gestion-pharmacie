@@ -69,8 +69,8 @@ function getGenderDistribution($bdd) {
     
     $res = mysqli_query($bdd, "SELECT 
         CASE 
-            WHEN civilite = 'M' THEN 'Homme'
-            WHEN civilite = 'F' THEN 'Femme'
+            WHEN civilite = 'M.' THEN 'Homme'
+            WHEN civilite IN ('Mme', 'Mlle') THEN 'Femme'
             ELSE 'Autre'
         END as genre, 
         COUNT(*) as nb 
