@@ -322,26 +322,13 @@
   <div class="parent-wrapper label-1">
     <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="profil">
       <li class="nav-item">
-        <a class="nav-link" href="mon_profil.php" data-bs-toggle="" aria-expanded="false">
-          <div class="d-flex align-items-center">
-            <span class="nav-link-icon"><i class="fas fa-user text-primary"></i></span>
-            <span class="nav-link-text">Informations</span>
-          </div>
-        </a>
+        <hr class="my-2">
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="changer_mot_de_passe.php" data-bs-toggle="" aria-expanded="false">
+        <a class="nav-link" href="mon_compte.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
-            <span class="nav-link-icon"><i class="fas fa-key text-warning"></i></span>
-            <span class="nav-link-text">Mot de passe</span>
-          </div>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="preferences.php" data-bs-toggle="" aria-expanded="false">
-          <div class="d-flex align-items-center">
-            <span class="nav-link-icon"><i class="fas fa-cog text-secondary"></i></span>
-            <span class="nav-link-text">Préférences</span>
+            <span class="nav-link-icon"><i class="fas fa-user"></i></span>
+            <span class="nav-link-text">Mon compte</span>
           </div>
         </a>
       </li>
@@ -349,7 +336,7 @@
         <hr class="my-2">
       </li>
       <li class="nav-item">
-        <a class="nav-link text-danger" href="logout.php" data-bs-toggle="" aria-expanded="false">
+        <a class="nav-link text-danger" href="deconnexion.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-sign-out-alt text-danger"></i></span>
             <span class="nav-link-text">Déconnexion</span>

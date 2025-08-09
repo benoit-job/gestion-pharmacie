@@ -4,48 +4,157 @@
   include("includes/fonctions.php");
 ?>
 
-
-
 <?php  
 if(isset($_GET["utilisateur"])) 
 {
-    $_SESSION["utilisateurs"] = $_GET["utilisateur"];
+    $_SESSION["user"]["id"] = $_GET["utilisateur"];
 }
 
-if (isset($_POST['modifierMot_de_passe']) && hash_equals($_SESSION["utilisateur"]["mot_de_passe"], $_POST["ancien_mdp"])) 
-{
-    if($_POST["nouveau_mdp"] === $_POST["confirmer_mdp"]) 
-    {
-        $nouveau_mdp = strip_tags(htmlspecialchars(trim($_POST["nouveau_mdp"])));
-        $query = "UPDATE utilisateurs
-                    SET mot_de_passe = \"$nouveau_mdp\"
-                    WHERE id_site = '".$_SESSION['site']['id']."' AND 
-                            id=".$_SESSION["utilisateurs"];
-        mysqli_query($bdd, $query) or die("Requête non conforme");
-        echo "<script>alert('Mot de passe a été changé');</script>";
+if (isset($_POST['modifierPassword'])) {
+    // Vérification de l'ancien mot de passe
+    if (!hash_equals($_SESSION["user"]["password"], $_POST["ancien_mdp"])) {
+        $_SESSION['toast'] = [
+            'type' => 'error',
+            'message' => 'Ancien mot de passe incorrect'
+        ];
     } 
-    else 
-    {
-        echo "<script>alert('Les mots de passe ne correspondent pas');</script>";
+    // Vérification de la correspondance des nouveaux mots de passe
+    elseif ($_POST["nouveau_mdp"] !== $_POST["confirmer_mdp"]) {
+        $_SESSION['toast'] = [
+            'type' => 'error',
+            'message' => 'Les nouveaux mots de passe ne correspondent pas'
+        ];
     }
-}
+    // Vérification de la force du nouveau mot de passe
+    elseif (strlen($_POST["nouveau_mdp"]) < 8) {
+        $_SESSION['toast'] = [
+            'type' => 'error',
+            'message' => 'Le mot de passe doit contenir au moins 8 caractères'
+        ];
+    }
+    // Toutes les vérifications sont passées
+    else {
+        $nouveau_mdp = strip_tags(htmlspecialchars(trim($_POST["nouveau_mdp"])));
+        
+        // Utilisation de requête préparée pour plus de sécurité
+        $query = "UPDATE users SET password = ? WHERE id = ?";
+        $stmt = mysqli_prepare($bdd, $query);
+        mysqli_stmt_bind_param($stmt, "si", $nouveau_mdp, $_SESSION["user"]["id"]);
+        $result = mysqli_stmt_execute($stmt);
 
+        if ($result) {
+            $_SESSION['toast'] = [
+                'type' => 'success',
+                'message' => 'Mot de passe modifié avec succès',
+                'duration' => 5000
+            ];
+            
+            // Mise à jour du mot de passe en session
+            $_SESSION["user"]["password"] = $nouveau_mdp;
+        } else {
+            $_SESSION['toast'] = [
+                'type' => 'error',
+                'message' => 'Erreur lors de la modification du mot de passe',
+                'duration' => 5000
+            ];
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
+    
+    // Redirection pour afficher les notifications
+    header("Location: ".$_SERVER['HTTP_REFERER']);
+    exit();
+}
 
 if(isset($_POST['modifierInfo']))   
 {
     $pseudo = strip_tags(htmlspecialchars(trim($_POST["pseudo"])));
     $contact = strip_tags(htmlspecialchars(trim($_POST["contact"])));
+    $email = strip_tags(htmlspecialchars(trim($_POST["email"])));
+    
+    // Gestion de l'upload d'image
+    $logo = null;
+    
+    if(isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+        $fileTmp = $_FILES['logo']['tmp_name'];
+        $fileName = basename($_FILES['logo']['name']);
+        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        
+        // Vérification des extensions autorisées
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        if(in_array($fileExt, $allowedExtensions)) {
+            
+            // Vérification de la taille du fichier (5MB max)
+            if($_FILES['logo']['size'] <= 5242880) {
+                
+                // Création du répertoire s'il n'existe pas
+                if(!is_dir('fichiers/uploads/')) {
+                    mkdir('fichiers/uploads/', 0755, true);
+                }
+                
+                $destination = 'fichiers/uploads/'.uniqid('profile_').'.'.$fileExt;
+                
+                if(move_uploaded_file($fileTmp, $destination)) {
+                    $logo = mysqli_real_escape_string($bdd, $destination);
+                    
+                    $_SESSION['toast'] = [
+                        'type' => 'success',
+                        'message' => 'Image de profil mise à jour avec succès'
+                    ];
+                } else {
+                    $_SESSION['toast'] = [
+                        'type' => 'error',
+                        'message' => 'Erreur lors de l\'upload de l\'image'
+                    ];
+                }
+            } else {
+                $_SESSION['toast'] = [
+                    'type' => 'error',
+                    'message' => 'L\'image est trop volumineuse (max 5MB)'
+                ];
+            }
+        } else {
+            $_SESSION['toast'] = [
+                'type' => 'error',
+                'message' => 'Format d\'image non autorisé. Utilisez JPG, PNG ou GIF'
+            ];
+        }
+    }
 
-    $query = "UPDATE utilisateurs
-              SET nom = \"$pseudo\",
-                  telephone = \"$contact\"
-              WHERE id_site ='".$_SESSION['site']['id']."' AND 
-                    id =".$_SESSION["utilisateurs"];
-    mysqli_query($bdd, $query) or die("Requête non conforme");
-} 
+    // Construction de la requête
+    if($logo !== null) {
+        $query = "UPDATE users SET pseudo = ?, telephone = ?, email = ?, logo = ? WHERE id = ?";
+        $stmt = mysqli_prepare($bdd, $query);
+        mysqli_stmt_bind_param($stmt, "ssssi", $pseudo, $contact, $email, $logo, $_SESSION["user"]["id"]);
+    } else {
+        $query = "UPDATE users SET pseudo = ?, telephone = ?, email = ? WHERE id = ?";
+        $stmt = mysqli_prepare($bdd, $query);
+        mysqli_stmt_bind_param($stmt, "sssi", $pseudo, $contact, $email, $_SESSION["user"]["id"]);
+    }
+    
+    $result = mysqli_stmt_execute($stmt);
+    
+    if($result && !isset($_SESSION['toast'])) {
+        $_SESSION['toast'] = [
+            'type' => 'success',
+            'message' => 'Informations mises à jour avec succès'
+        ];
+    } elseif(!$result) {
+        $_SESSION['toast'] = [
+            'type' => 'error',
+            'message' => 'Erreur lors de la mise à jour des informations'
+        ];
+    }
+    
+    mysqli_stmt_close($stmt);
+    
+    // Redirection pour afficher les notifications
+    header("Location: ".$_SERVER['HTTP_REFERER']);
+    exit();
+}
 
- 
-$query = "SELECT * FROM utilisateurs WHERE id_site = ".$_SESSION['site']['id']." AND id=".$_SESSION["utilisateurs"];
+$query = "SELECT * FROM users WHERE id=".$_SESSION["user"]["id"];
 $result = mysqli_query($bdd,$query) or die ("system error");
 $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
 ?>
@@ -62,6 +171,59 @@ $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
     <title>Mon Compte</title>
 
     <?php include('includes/php/includes-css.php');?>
+
+    <style>
+        .profile-image-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+        }
+        
+        .profile-image-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image-preview:hover {
+            border-color: #007bff;
+            opacity: 0.8;
+        }
+        
+        .image-upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .profile-image-container:hover .image-upload-overlay {
+            opacity: 1;
+        }
+        
+        .upload-icon {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .image-input {
+            display: none;
+        }
+    </style>
 
   </head>
 
@@ -92,17 +254,39 @@ $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
                             <!-- Formulaire pour mettre à jour les informations -->
                             <div class="col-md-7 bg-white p-4 rounded-3 shadow-sm">
                                 <h4 class="mb-4">Mettre à jour vos informations</h4>
-                                <form action="mon_compte.php" method="post">
+                                
+                                <!-- Section image de profil -->
+                                <div class="profile-image-container">
+                                    <img id="profileImagePreview" 
+                                         src="<?php echo !empty($_SESSION['utilisateur']['logo']) ? $_SESSION['utilisateur']['logo'] : 'assets/img/default-pharmacy.png'; ?>" 
+                                         alt="Photo de profil" 
+                                         class="profile-image-preview"
+                                         onclick="document.getElementById('imageInput').click()">
+                                    <div class="image-upload-overlay" onclick="document.getElementById('imageInput').click()">
+                                        <i class="fas fa-camera upload-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <form action="mon_compte.php" method="post" enctype="multipart/form-data">
+                                    <!-- Champ caché pour l'image -->
+                                    <input type="file" id="imageInput" name="logo" class="image-input" accept="image/*" onchange="previewImage(this)">
+                                    
                                     <!-- Champ pour le nom -->
                                     <div class="mb-3">
-                                        <label for="pseudo" class="form-label">Nom</label>
-                                        <input type="text" name="pseudo" id="pseudo" class="form-control" value="<?php echo $_SESSION['utilisateur']['nom']; ?>" required>
+                                        <label for="pseudo" class="form-label">Pseudo</label>
+                                        <input type="text" name="pseudo" id="pseudo" class="form-control" value="<?php echo $_SESSION['utilisateur']['pseudo']; ?>" required>
                                     </div>
 
                                     <!-- Champ pour le téléphone -->
                                     <div class="mb-3">
                                         <label for="contact" class="form-label">Téléphone</label>
                                         <input type="text" name="contact" id="contact" class="form-control" value="<?php echo $_SESSION['utilisateur']['telephone']; ?>" required>
+                                    </div>
+
+                                    <!-- Champ pour l'email -->
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" id="email" class="form-control" value="<?php echo $_SESSION['utilisateur']['email']; ?>" required>
                                     </div>
 
                                     <!-- Bouton de soumission -->
@@ -136,7 +320,7 @@ $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
 
                                     <!-- Bouton de soumission -->
                                     <div>
-                                        <button type="submit" class="btn btn-primary px-5" name="modifierMot_de_passe">Changer mot de passe</button>
+                                        <button type="submit" class="btn btn-primary px-5" name="modifierPassword">Changer mot de passe</button>
                                     </div>
                                 </form>
                             </div>
@@ -158,8 +342,40 @@ $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
     </main>
 
     <?php include('includes/php/includes-js.php');?>
+    
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('profileImagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+                
+                // Validation côté client
+                const file = input.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format non autorisé. Utilisez JPG, PNG ou GIF');
+                    input.value = '';
+                    return;
+                }
+                
+                if (file.size > maxSize) {
+                    alert('L\'image est trop volumineuse (max 5MB)');
+                    input.value = '';
+                    return;
+                }
+            }
+        }
+    </script>
 
   </body>
 
 </html>
-
