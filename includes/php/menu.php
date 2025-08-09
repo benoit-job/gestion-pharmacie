@@ -299,10 +299,10 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="sauvegarde.php" data-bs-toggle="" aria-expanded="false">
+        <a class="nav-link" href="sauvegardes.php" data-bs-toggle="" aria-expanded="false">
           <div class="d-flex align-items-center">
             <span class="nav-link-icon"><i class="fas fa-database text-success"></i></span>
-            <span class="nav-link-text">Sauvegarde/Restauration</span>
+            <span class="nav-link-text">Données Sauvegardés</span>
           </div>
         </a>
       </li>
