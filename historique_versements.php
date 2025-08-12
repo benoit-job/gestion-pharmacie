@@ -2,6 +2,7 @@
 include("includes/connexion_acces_page.php");
 include("includes/connexion_bdd.php");
 include("includes/fonctions.php");
+include_once("includes/auth_functions.php");   
 
 // Récupération de tous les souscripteurs avec leurs versements
 $query = "SELECT s.id_souscripteur, UPPER(CONCAT(s.nom, ' ', s.prenom)) AS nom_complet,

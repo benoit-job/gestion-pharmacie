@@ -565,6 +565,7 @@ $("#connexions").html(`
                         window.location.href = "accueil.php";
                     }, 3000);
                 } else {
+                    console.log('error', data);
                     pop_notif('error', data);
                     $("#message").css("color", "red").html(data);
                 }

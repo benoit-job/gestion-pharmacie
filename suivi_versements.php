@@ -2,6 +2,7 @@
 include("includes/connexion_acces_page.php");
 include("includes/connexion_bdd.php");
 include("includes/fonctions.php");
+include_once("includes/auth_functions.php");   
 
 // Paramètres de période
 $debut = isset($_GET['debut']) ? $_GET['debut'] : date('Y-m-01');

@@ -2,6 +2,7 @@
 include("includes/connexion_acces_page.php");
 include("includes/connexion_bdd.php");
 include("includes/fonctions.php");
+include_once("includes/auth_functions.php");   
 $url = "modif_versements.php";
 
 // Récupérer les versements existants si un souscripteur est sélectionné

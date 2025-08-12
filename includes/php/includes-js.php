@@ -223,18 +223,15 @@ function pop_notif(c, t, i) {
         });
     });
 
-    // Fonction générique de suppression
 function confirmerSuppression() {
-    // Écouteur pour tous les boutons de suppression
     $(document).on('click', '.btn-supprimer', function(e) {
         e.preventDefault();
-        
+
         const element = $(this);
         const id = element.data('id');
         const type = element.data('type');
         const url = element.data('url');
-        console.log('supprimer' + type.charAt(0).toUpperCase() + type.slice(1));
-        
+
         Swal.fire({
             title: 'Confirmer la suppression',
             text: `Voulez-vous vraiment supprimer cet ${type} ?`,
@@ -252,6 +249,20 @@ function confirmerSuppression() {
             }
         }).then((result) => {
             if (result.isConfirmed) {
+                // Afficher la modale de chargement
+                Swal.fire({
+                    title: 'Suppression en cours...',
+                    html: 'Veuillez patienter',
+                    allowOutsideClick: false,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInUp'
+                    }
+                });
+
                 // Créer un formulaire dynamique
                 const form = $('<form>').attr({
                     method: 'post',
@@ -268,32 +279,23 @@ function confirmerSuppression() {
                         value: '1'
                     })
                 );
-                
-                // Ajouter au DOM et soumettre
+
+                // Ajouter au DOM
                 $('body').append(form);
-                form.submit();
-                
-                // Animation pendant le traitement
-                Swal.fire({
-                    title: 'Suppression en cours...',
-                    html: 'Veuillez patienter',
-                    timerProgressBar: true,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInUp'
-                    }
-                });
+
+                // Attendre 1 seconde avant de soumettre
+                setTimeout(() => {
+                    form.submit();
+                }, 1000);
             }
         });
     });
 }
 
-// Initialiser la fonction au chargement
 $(document).ready(function() {
     confirmerSuppression();
 });
+
 </script>
 
 <script>
