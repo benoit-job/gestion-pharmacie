@@ -157,7 +157,7 @@ if(isset($_POST['modifierInfo']))
 
 $query = "SELECT * FROM users WHERE id=".$_SESSION["user"]["id"];
 $result = mysqli_query($bdd,$query) or die ("system error");
-$_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
+$_SESSION["user"] = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>
@@ -259,7 +259,7 @@ $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
                                 <!-- Section image de profil -->
                                 <div class="profile-image-container">
                                     <img id="profileImagePreview" 
-                                         src="<?php echo !empty($_SESSION['utilisateur']['logo']) ? $_SESSION['utilisateur']['logo'] : 'assets/img/default-pharmacy.png'; ?>" 
+                                         src="<?php echo !empty($_SESSION["user"]['logo']) ? $_SESSION["user"]['logo'] : 'https://th.bing.com/th?id=OIP.fqSvfYQB0rQ-6EG_oqvonQHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'; ?>" 
                                          alt="Photo de profil" 
                                          class="profile-image-preview"
                                          onclick="document.getElementById('imageInput').click()">
@@ -275,19 +275,19 @@ $_SESSION["utilisateur"] = mysqli_fetch_assoc($result);
                                     <!-- Champ pour le nom -->
                                     <div class="mb-3">
                                         <label for="pseudo" class="form-label">Pseudo</label>
-                                        <input type="text" name="pseudo" id="pseudo" class="form-control" value="<?php echo $_SESSION['utilisateur']['pseudo']; ?>" required>
+                                        <input type="text" name="pseudo" id="pseudo" class="form-control" value="<?php echo $_SESSION["user"]['pseudo']; ?>" required>
                                     </div>
 
                                     <!-- Champ pour le téléphone -->
                                     <div class="mb-3">
                                         <label for="contact" class="form-label">Téléphone</label>
-                                        <input type="text" name="contact" id="contact" class="form-control" value="<?php echo $_SESSION['utilisateur']['telephone']; ?>" required>
+                                        <input type="text" name="contact" id="contact" class="form-control" value="<?php echo $_SESSION["user"]['telephone']; ?>" required>
                                     </div>
 
                                     <!-- Champ pour l'email -->
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control" value="<?php echo $_SESSION['utilisateur']['email']; ?>" required>
+                                        <input type="email" name="email" id="email" class="form-control" value="<?php echo $_SESSION["user"]['email']; ?>" required>
                                     </div>
 
                                     <!-- Bouton de soumission -->

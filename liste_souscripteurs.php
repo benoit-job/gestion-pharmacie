@@ -2,7 +2,7 @@
   include("includes/connexion_acces_page.php");
   include("includes/connexion_bdd.php");
   include("includes/fonctions.php");
-include_once("includes/auth_functions.php");   
+  include_once("includes/auth_functions.php");   
   $url = "souscripteurs_pharma.php";
 ?>
 <?php
@@ -91,160 +91,159 @@ if (isset($_POST["supprimerSouscripteur"])) {
                     </div>
                     <div class="table-responsive">
                         <?php
-// Première requête pour déterminer le nombre maximum de versements
-$query_max_versements = "SELECT s.id_souscripteur, COUNT(v.id) as nb_versements 
-                        FROM souscripteurs AS s
-                        LEFT JOIN versements_souscripteurs AS v ON v.id_souscripteur = s.id_souscripteur
-                        GROUP BY s.id_souscripteur
-                        ORDER BY nb_versements DESC
-                        LIMIT 1";
-$result_max = mysqli_query($bdd, $query_max_versements);
-$max_versements = 0;
-if($row_max = mysqli_fetch_array($result_max)) {
-    $max_versements = $row_max['nb_versements'];
-}
-?>
-
-<table class="table table-hover m-0 usersTable" style="width:100%" data-title="Souscripteurs">
-    <thead class="thead-">
-        <tr style="font-size: 0.8rem;">
-            <th>NBRE SC</th>
-            <th>N° SOUSCRIPT</th>
-            <th class='hidden'>NOM</th>
-            <th class='hidden'>PRENOMS</th>
-            <th class='hidden'>SEXE</th>
-            <th class='no_export'>NOM & PRENOMS</th>
-            <th class='hidden'>NATIONNALITE</th>
-            <th class='hidden'>TELEPHONE FIXE</th>
-            <th class='no_export'>FIXE/PORTABLE</th>
-            <th class='hidden'>TELEPHONE PORTABLE</th>
-            <th class='hidden'>EMAIL</th>
-            <th class='hidden'>SECTEUR D 'ACTIVITE</th>
-            <th>NOM DE L'ETABLISSEMENT</th>
-            <th>LIEU D'EXERCICE</th>
-            <th class='hidden'>REGION PHARMACIE</th>
-            <th>DATE DE SOUCRIPTION</th>
-            <th>MONTANT SOUSCRIT</th>
-            <th class='hidden'>MONTANT SOUSCRIT TYPE 1</th>
-            <th class='hidden'>MONTANT SOUSCRIT TYPE 2</th>
-            <th class='hidden'>NOMBRE D 'ACTION</th>
-            
-            <?php 
-            // Génération dynamique des en-têtes de versements
-            for($i = 1; $i <= $max_versements; $i++) {
-                echo "<th class='hidden'>VERSEMENT $i</th>";
-                echo "<th class='hidden'>DATE VERSEMENT $i</th>";
-                echo "<th class='hidden'>NATURE VERSEMENT $i</th>";
-            }
-            ?>
-            
-            <th>TOTAL VERSEMENTS</th>
-            <th class='no_export'>ACTIVE</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php 
-        $query = "SELECT s.*,
-                        UPPER(s.nom) AS nom_src,
-                        UPPER(s.prenom) AS prenom_src,
-                        UPPER(CONCAT_WS(' ', s.telephone_fixe, s.telephone_portable)) AS contacts,
-                        UPPER(CONCAT_WS(' ', s.civilite, s.nom, s.prenom)) AS nom_complet,
-                        UPPER(s.nom_etablissement) AS nom_etablissement,
-                        DATE_FORMAT(s.date_souscription, '%d/%m/%Y') AS date_souscription,
-                        UPPER(l.nom_lieu) AS lieu_exercice,
-                        UPPER(r.nom_region) AS nom_region,
-                        s.active
-                FROM souscripteurs AS s
-                LEFT JOIN lieu_exercices AS l ON l.id = s.id_lieu_exercice
-                LEFT JOIN regions AS r ON r.id = l.id_region
-                ORDER BY s.nom_etablissement";
-        $resultat = mysqli_query($bdd, $query) or die("Erreur de requête");
-
-        $ligne = 0;
-        while($souscripteur = mysqli_fetch_array($resultat)) {                           
-            $isActive = strtolower($souscripteur["active"]) === 'oui';
-            $activeClass = $isActive ? 'bg-success' : '';
-            $checkedAttr = $isActive ? 'checked' : '';
-            
-            // Récupérer les versements pour ce souscripteur
-            $query_versements = "SELECT montant, DATE_FORMAT(date, '%d/%m/%Y') as date_versement, nature
-                                FROM versements_souscripteurs 
-                                WHERE id_souscripteur = '" . $souscripteur['id_souscripteur'] . "'
-                                ORDER BY date_versement ASC";
-            $result_versements = mysqli_query($bdd, $query_versements);
-            $versements = [];
-            $total_versements = 0;
-            
-            while($versement = mysqli_fetch_array($result_versements)) {
-                $versements[] = $versement;
-                $total_versements += floatval($versement['montant']);
-            }
-            
-            echo "<tr>
-                    <td>".++$ligne."</td>
-                    <td>".htmlspecialchars($souscripteur["n_souscription"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["nom_src"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["prenom_src"] ?? '')."</td>
-                    <td class='hidden'>".ucfirst(htmlspecialchars($souscripteur["civilite"] ?? ''))."</td>
-                    <td class='no_export'>".htmlspecialchars($souscripteur["nom_complet"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["nationalite"] ?? '')."</td>
-                    <td class='hidden'> +225".htmlspecialchars($souscripteur["telephone_fixe"] ?? '')."</td>
-                    <td class='no_export'>".htmlspecialchars($souscripteur["contacts"] ?? '')."</td>
-                    <td class='hidden'> +225".htmlspecialchars($souscripteur["telephone_portable"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["email"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["secteur_activite"] ?? '')."</td>
-                    <td>".htmlspecialchars($souscripteur["nom_etablissement"] ?? '')."</td>
-                    <td>".htmlspecialchars($souscripteur["lieu_exercice"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["nom_region"] ?? '')."</td>
-                    <td>".htmlspecialchars($souscripteur["date_souscription"] ?? '')."</td>
-                    <td>".number_format($souscripteur["montant_souscrit"] ?? 0, 0, ',', ' ')." FCFA</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["montant_souscrit_type1"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["montant_souscrit_type2"] ?? '')."</td>
-                    <td class='hidden'>".htmlspecialchars($souscripteur["nombre_actions"] ?? '0')."</td>";
-            
-            // Affichage des versements avec incrémentation
-            for($i = 1; $i <= $max_versements; $i++) {
-                $versement_index = $i - 1;
-                if(isset($versements[$versement_index])) {
-                    echo "<td class='hidden'>".number_format($versements[$versement_index]['montant'], 0, ',', ' ')." FCFA</td>";
-                    echo "<td class='hidden'>".htmlspecialchars($versements[$versement_index]['date_versement'])."</td>";
-                    echo "<td class='hidden'>".htmlspecialchars($versements[$versement_index]['nature_versement'] ?? '')."</td>";
-                } else {
-                    echo "<td class='hidden'>-</td>";
-                    echo "<td class='hidden'>-</td>";
-                    echo "<td class='hidden'>-</td>";
+                // Première requête pour déterminer le nombre maximum de versements
+                $query_max_versements = "SELECT s.id_souscripteur, COUNT(v.id) as nb_versements 
+                                        FROM souscripteurs AS s
+                                        LEFT JOIN versements_souscripteurs AS v ON v.id_souscripteur = s.id_souscripteur
+                                        GROUP BY s.id_souscripteur
+                                        ORDER BY nb_versements DESC
+                                        LIMIT 1";
+                $result_max = mysqli_query($bdd, $query_max_versements);
+                $max_versements = 0;
+                if($row_max = mysqli_fetch_array($result_max)) {
+                    $max_versements = $row_max['nb_versements'];
                 }
-            }
-            
-            // Affichage du total des versements
-            echo "<td><strong>".number_format($total_versements, 0, ',', ' ')." FCFA</strong></td>";
-            
-            echo "<td class='text-center no_export'>
-                    <div class='form-check form-switch mb-4'> 
-                        <input class='form-check-input $activeClass' type='checkbox' $checkedAttr disabled>
-                    </div>
-                </td>
-                <td class='text-end no_export'>
-                    <form method='post' action='".$url."' style='display:inline;'>
-                        <input type='hidden' name='id_souscripteur' value='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'>
-                        
-                        <a href='update_souscripteurs.php?id_souscripteur=" . crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C') . "' class='btn btn-light btn-sm' data-toggle='tooltip' data-placement='top' title='Modifier le souscripteur " . htmlspecialchars($souscripteur['nom_complet'] ?? '') . "'>                                                            
-                           <i class='fas fa-edit me-1'></i>
-                        </a>
-                        
-                        <button type='button' class='btn btn-light btn-sm btn-supprimer' 
-                            data-id='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'
-                            data-type='souscripteur'>
-                            <i class='fas fa-trash-alt me-1'></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>";
-        }
-        ?>                          
-    </tbody>
-</table>
+                ?>
+                        <table class="table table-hover m-0 usersTable" style="width:100%" data-title="Souscripteurs">
+                            <thead class="thead-">
+                                <tr style="font-size: 0.8rem;">
+                                    <th>NBRE SC</th>
+                                    <th>N° SOUSCRIPT</th>
+                                    <th class='hidden'>NOM</th>
+                                    <th class='hidden'>PRENOMS</th>
+                                    <th class='hidden'>SEXE</th>
+                                    <th class='no_export'>NOM & PRENOMS</th>
+                                    <th class='hidden'>NATIONNALITE</th>
+                                    <th class='hidden'>TELEPHONE FIXE</th>
+                                    <th class='no_export'>FIXE/PORTABLE</th>
+                                    <th class='hidden'>TELEPHONE PORTABLE</th>
+                                    <th class='hidden'>EMAIL</th>
+                                    <th class='hidden'>SECTEUR D 'ACTIVITE</th>
+                                    <th>NOM DE L'ETABLISSEMENT</th>
+                                    <th>LIEU D'EXERCICE</th>
+                                    <th class='hidden'>REGION PHARMACIE</th>
+                                    <th>DATE DE SOUCRIPTION</th>
+                                    <th>MONTANT SOUSCRIT</th>
+                                    <th class='hidden'>MONTANT SOUSCRIT TYPE 1</th>
+                                    <th class='hidden'>MONTANT SOUSCRIT TYPE 2</th>
+                                    <th class='hidden'>NOMBRE D 'ACTION</th>
+                                    
+                                    <?php 
+                                    // Génération dynamique des en-têtes de versements
+                                    for($i = 1; $i <= $max_versements; $i++) {
+                                        echo "<th class='hidden'>VERSEMENT $i</th>";
+                                        echo "<th class='hidden'>DATE VERSEMENT $i</th>";
+                                        echo "<th class='hidden'>NATURE VERSEMENT $i</th>";
+                                    }
+                                    ?>
+                                    
+                                    <th>TOTAL VERSEMENTS</th>
+                                    <th class='no_export'>ACTIVE</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $query = "SELECT s.*,
+                                                UPPER(s.nom) AS nom_src,
+                                                UPPER(s.prenom) AS prenom_src,
+                                                UPPER(CONCAT_WS(' ', s.telephone_fixe, s.telephone_portable)) AS contacts,
+                                                UPPER(CONCAT_WS(' ', s.civilite, s.nom, s.prenom)) AS nom_complet,
+                                                UPPER(s.nom_etablissement) AS nom_etablissement,
+                                                DATE_FORMAT(s.date_souscription, '%d/%m/%Y') AS date_souscription,
+                                                UPPER(l.nom_lieu) AS lieu_exercice,
+                                                UPPER(r.nom_region) AS nom_region,
+                                                s.active
+                                        FROM souscripteurs AS s
+                                        LEFT JOIN lieu_exercices AS l ON l.id = s.id_lieu_exercice
+                                        LEFT JOIN regions AS r ON r.id = l.id_region
+                                        ORDER BY s.nom_etablissement";
+                                $resultat = mysqli_query($bdd, $query) or die("Erreur de requête");
+
+                                $ligne = 0;
+                                while($souscripteur = mysqli_fetch_array($resultat)) {                           
+                                    $isActive = strtolower($souscripteur["active"]) === 'oui';
+                                    $activeClass = $isActive ? 'bg-success' : '';
+                                    $checkedAttr = $isActive ? 'checked' : '';
+                                    
+                                    // Récupérer les versements pour ce souscripteur
+                                    $query_versements = "SELECT montant, DATE_FORMAT(date, '%d/%m/%Y') as date_versement, nature
+                                                        FROM versements_souscripteurs 
+                                                        WHERE id_souscripteur = '" . $souscripteur['id_souscripteur'] . "'
+                                                        ORDER BY date_versement ASC";
+                                    $result_versements = mysqli_query($bdd, $query_versements);
+                                    $versements = [];
+                                    $total_versements = 0;
+                                    
+                                    while($versement = mysqli_fetch_array($result_versements)) {
+                                        $versements[] = $versement;
+                                        $total_versements += floatval($versement['montant']);
+                                    }
+                                    
+                                    echo "<tr>
+                                            <td>".++$ligne."</td>
+                                            <td>".htmlspecialchars($souscripteur["n_souscription"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["nom_src"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["prenom_src"] ?? '')."</td>
+                                            <td class='hidden'>".ucfirst(htmlspecialchars($souscripteur["civilite"] ?? ''))."</td>
+                                            <td class='no_export'>".htmlspecialchars($souscripteur["nom_complet"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["nationalite"] ?? '')."</td>
+                                            <td class='hidden'> +225".htmlspecialchars($souscripteur["telephone_fixe"] ?? '')."</td>
+                                            <td class='no_export'>".htmlspecialchars($souscripteur["contacts"] ?? '')."</td>
+                                            <td class='hidden'> +225".htmlspecialchars($souscripteur["telephone_portable"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["email"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["secteur_activite"] ?? '')."</td>
+                                            <td>".htmlspecialchars($souscripteur["nom_etablissement"] ?? '')."</td>
+                                            <td>".htmlspecialchars($souscripteur["lieu_exercice"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["nom_region"] ?? '')."</td>
+                                            <td>".htmlspecialchars($souscripteur["date_souscription"] ?? '')."</td>
+                                            <td>".number_format($souscripteur["montant_souscrit"] ?? 0, 0, ',', ' ')." FCFA</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["montant_souscrit_type1"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["montant_souscrit_type2"] ?? '')."</td>
+                                            <td class='hidden'>".htmlspecialchars($souscripteur["nombre_actions"] ?? '0')."</td>";
+                                    
+                                    // Affichage des versements avec incrémentation
+                                    for($i = 1; $i <= $max_versements; $i++) {
+                                        $versement_index = $i - 1;
+                                        if(isset($versements[$versement_index])) {
+                                            echo "<td class='hidden'>".number_format($versements[$versement_index]['montant'], 0, ',', ' ')." FCFA</td>";
+                                            echo "<td class='hidden'>".htmlspecialchars($versements[$versement_index]['date_versement'])."</td>";
+                                            echo "<td class='hidden'>".htmlspecialchars($versements[$versement_index]['nature_versement'] ?? '')."</td>";
+                                        } else {
+                                            echo "<td class='hidden'>-</td>";
+                                            echo "<td class='hidden'>-</td>";
+                                            echo "<td class='hidden'>-</td>";
+                                        }
+                                    }
+                                    
+                                    // Affichage du total des versements
+                                    echo "<td><strong>".number_format($total_versements, 0, ',', ' ')." FCFA</strong></td>";
+                                    
+                                    echo "<td class='text-center no_export'>
+                                            <div class='form-check form-switch mb-4'> 
+                                                <input class='form-check-input $activeClass' type='checkbox' $checkedAttr disabled>
+                                            </div>
+                                        </td>
+                                        <td class='text-end no_export'>
+                                            <form method='post' action='".$url."' style='display:inline;'>
+                                                <input type='hidden' name='id_souscripteur' value='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'>
+                                                
+                                                <a href='update_souscripteurs.php?id_souscripteur=" . crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C') . "' class='btn btn-light btn-sm' data-toggle='tooltip' data-placement='top' title='Modifier le souscripteur " . htmlspecialchars($souscripteur['nom_complet'] ?? '') . "'>                                                            
+                                                <i class='fas fa-edit me-1'></i>
+                                                </a>
+                                                
+                                                <button type='button' class='btn btn-light btn-sm btn-supprimer' 
+                                                    data-id='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'
+                                                    data-type='souscripteur'>
+                                                    <i class='fas fa-trash-alt me-1'></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>";
+                                }
+                                ?>                          
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
