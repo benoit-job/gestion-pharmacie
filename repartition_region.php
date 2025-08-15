@@ -297,18 +297,6 @@ regionsMapData.forEach(region => {
         .addTo(map)
         .bindPopup(`<b>${region.nom_region}</b><br>${region.nombre_souscripteurs} souscripteurs`);
 });
-
-        
-        // Fonctions d'export
-        function exportToExcel() {
-            // Implémentez l'export Excel ici
-            alert('Export Excel en cours de développement');
-        }
-        
-        function exportToPDF() {
-            // Implémentez l'export PDF ici
-            alert('Export PDF en cours de développement');
-        }
     </script>
 </body>
 </html>

@@ -499,6 +499,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
+// Initialisation des tooltips Bootstrap
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip({
+        placement: 'top',
+        trigger: 'hover'
+    });
+});
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
 
     // Gestion générique des boutons

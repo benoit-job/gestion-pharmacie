@@ -91,19 +91,19 @@ if (isset($_POST["supprimerSouscripteur"])) {
                     </div>
                     <div class="table-responsive">
                         <?php
-                // Première requête pour déterminer le nombre maximum de versements
-                $query_max_versements = "SELECT s.id_souscripteur, COUNT(v.id) as nb_versements 
-                                        FROM souscripteurs AS s
-                                        LEFT JOIN versements_souscripteurs AS v ON v.id_souscripteur = s.id_souscripteur
-                                        GROUP BY s.id_souscripteur
-                                        ORDER BY nb_versements DESC
-                                        LIMIT 1";
-                $result_max = mysqli_query($bdd, $query_max_versements);
-                $max_versements = 0;
-                if($row_max = mysqli_fetch_array($result_max)) {
-                    $max_versements = $row_max['nb_versements'];
-                }
-                ?>
+                            // Première requête pour déterminer le nombre maximum de versements
+                            $query_max_versements = "SELECT s.id_souscripteur, COUNT(v.id) as nb_versements 
+                                                    FROM souscripteurs AS s
+                                                    LEFT JOIN versements_souscripteurs AS v ON v.id_souscripteur = s.id_souscripteur
+                                                    GROUP BY s.id_souscripteur
+                                                    ORDER BY nb_versements DESC
+                                                    LIMIT 1";
+                            $result_max = mysqli_query($bdd, $query_max_versements);
+                            $max_versements = 0;
+                            if($row_max = mysqli_fetch_array($result_max)) {
+                                $max_versements = $row_max['nb_versements'];
+                            }
+                        ?>
                         <table class="table table-hover m-0 usersTable" style="width:100%" data-title="Souscripteurs">
                             <thead class="thead-">
                                 <tr style="font-size: 0.8rem;">
@@ -113,20 +113,20 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                     <th class='hidden'>PRENOMS</th>
                                     <th class='hidden'>SEXE</th>
                                     <th class='no_export'>NOM & PRENOMS</th>
-                                    <th class='hidden'>NATIONNALITE</th>
-                                    <th class='hidden'>TELEPHONE FIXE</th>
+                                    <th class='hidden'>NATIONALITÉ</th>
+                                    <th class='hidden'>TÉLÉPHONE FIXE</th>
                                     <th class='no_export'>FIXE/PORTABLE</th>
-                                    <th class='hidden'>TELEPHONE PORTABLE</th>
+                                    <th class='hidden'>TÉLÉPHONE PORTABLE</th>
                                     <th class='hidden'>EMAIL</th>
-                                    <th class='hidden'>SECTEUR D 'ACTIVITE</th>
-                                    <th>NOM DE L'ETABLISSEMENT</th>
+                                    <th class='hidden'>SECTEUR D'ACTIVITÉ</th>
+                                    <th>NOM DE L'ÉTABLISSEMENT</th>
                                     <th>LIEU D'EXERCICE</th>
-                                    <th class='hidden'>REGION PHARMACIE</th>
-                                    <th>DATE DE SOUCRIPTION</th>
+                                    <th>RÉGION PHARMACIE</th>
+                                    <th>DATE DE SOUSCRIPTION</th>
                                     <th>MONTANT SOUSCRIT</th>
-                                    <th class='hidden'>MONTANT SOUSCRIT TYPE 1</th>
-                                    <th class='hidden'>MONTANT SOUSCRIT TYPE 2</th>
-                                    <th class='hidden'>NOMBRE D 'ACTION</th>
+                                    <th>MONTANT SOUSCRIT TYPE 1</th>
+                                    <th>MONTANT SOUSCRIT TYPE 2</th>
+                                    <th>NOMBRE D'ACTIONS</th>
                                     
                                     <?php 
                                     // Génération dynamique des en-têtes de versements
@@ -138,7 +138,7 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                     ?>
                                     
                                     <th>TOTAL VERSEMENTS</th>
-                                    <th class='no_export'>ACTIVE</th>
+                                    <th class='no_export'>ACTIF</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -147,7 +147,7 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                 $query = "SELECT s.*,
                                                 UPPER(s.nom) AS nom_src,
                                                 UPPER(s.prenom) AS prenom_src,
-                                                UPPER(CONCAT_WS(' ', s.telephone_fixe, s.telephone_portable)) AS contacts,
+                                                UPPER(CONCAT_WS(' / ', s.telephone_fixe, s.telephone_portable)) AS contacts,
                                                 UPPER(CONCAT_WS(' ', s.civilite, s.nom, s.prenom)) AS nom_complet,
                                                 UPPER(s.nom_etablissement) AS nom_etablissement,
                                                 DATE_FORMAT(s.date_souscription, '%d/%m/%Y') AS date_souscription,
@@ -182,33 +182,77 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                     
                                     echo "<tr>
                                             <td>".++$ligne."</td>
-                                            <td>".htmlspecialchars($souscripteur["n_souscription"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["nom_src"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["prenom_src"] ?? '')."</td>
-                                            <td class='hidden'>".ucfirst(htmlspecialchars($souscripteur["civilite"] ?? ''))."</td>
-                                            <td class='no_export'>".htmlspecialchars($souscripteur["nom_complet"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["nationalite"] ?? '')."</td>
-                                            <td class='hidden'> +225".htmlspecialchars($souscripteur["telephone_fixe"] ?? '')."</td>
-                                            <td class='no_export'>".htmlspecialchars($souscripteur["contacts"] ?? '')."</td>
-                                            <td class='hidden'> +225".htmlspecialchars($souscripteur["telephone_portable"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["email"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["secteur_activite"] ?? '')."</td>
-                                            <td>".htmlspecialchars($souscripteur["nom_etablissement"] ?? '')."</td>
-                                            <td>".htmlspecialchars($souscripteur["lieu_exercice"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["nom_region"] ?? '')."</td>
-                                            <td>".htmlspecialchars($souscripteur["date_souscription"] ?? '')."</td>
-                                            <td>".number_format($souscripteur["montant_souscrit"] ?? 0, 0, ',', ' ')." FCFA</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["montant_souscrit_type1"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["montant_souscrit_type2"] ?? '')."</td>
-                                            <td class='hidden'>".htmlspecialchars($souscripteur["nombre_actions"] ?? '0')."</td>";
+                                            <td class='text-truncate' style='max-width: 100px;' title='".htmlspecialchars($souscripteur["n_souscription"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["n_souscription"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 120px;' title='".htmlspecialchars($souscripteur["nom_src"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["nom_src"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 120px;' title='".htmlspecialchars($souscripteur["prenom_src"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["prenom_src"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 80px;' title='".ucfirst(htmlspecialchars($souscripteur["civilite"] ?? ''))."'>
+                                                ".ucfirst(htmlspecialchars($souscripteur["civilite"] ?? ''))."
+                                            </td>
+                                            <td class='no_export text-truncate' style='max-width: 150px;' title='".htmlspecialchars($souscripteur["nom_complet"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["nom_complet"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 100px;' title='".htmlspecialchars($souscripteur["nationalite"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["nationalite"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 120px;' title='+225".htmlspecialchars($souscripteur["telephone_fixe"] ?? '')."'>
+                                                +225".htmlspecialchars($souscripteur["telephone_fixe"] ?? '')."
+                                            </td>
+                                            <td class='no_export text-truncate' style='max-width: 150px;' title='".htmlspecialchars($souscripteur["contacts"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["contacts"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 120px;' title='+225".htmlspecialchars($souscripteur["telephone_portable"] ?? '')."'>
+                                                +225".htmlspecialchars($souscripteur["telephone_portable"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 180px;' title='".htmlspecialchars($souscripteur["email"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["email"] ?? '')."
+                                            </td>
+                                            <td class='hidden text-truncate' style='max-width: 150px;' title='".htmlspecialchars($souscripteur["secteur_activite"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["secteur_activite"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 180px;' title='".htmlspecialchars($souscripteur["nom_etablissement"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["nom_etablissement"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 150px;' title='".htmlspecialchars($souscripteur["lieu_exercice"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["lieu_exercice"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 150px;' title='".htmlspecialchars($souscripteur["nom_region"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["nom_region"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 120px;' title='".htmlspecialchars($souscripteur["date_souscription"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["date_souscription"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 120px;' title='".number_format($souscripteur["montant_souscrit"] ?? 0, 0, ',', ' ')." FCFA'>
+                                                ".number_format($souscripteur["montant_souscrit"] ?? 0, 0, ',', ' ')." FCFA
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 120px;' title='".htmlspecialchars($souscripteur["montant_souscrit_type1"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["montant_souscrit_type1"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 120px;' title='".htmlspecialchars($souscripteur["montant_souscrit_type2"] ?? '')."'>
+                                                ".htmlspecialchars($souscripteur["montant_souscrit_type2"] ?? '')."
+                                            </td>
+                                            <td class='text-truncate' style='max-width: 100px;' title='".htmlspecialchars($souscripteur["nombre_actions"] ?? '0')."'>
+                                                ".htmlspecialchars($souscripteur["nombre_actions"] ?? '0')."
+                                            </td>";
                                     
                                     // Affichage des versements avec incrémentation
                                     for($i = 1; $i <= $max_versements; $i++) {
                                         $versement_index = $i - 1;
                                         if(isset($versements[$versement_index])) {
-                                            echo "<td class='hidden'>".number_format($versements[$versement_index]['montant'], 0, ',', ' ')." FCFA</td>";
-                                            echo "<td class='hidden'>".htmlspecialchars($versements[$versement_index]['date_versement'])."</td>";
-                                            echo "<td class='hidden'>".htmlspecialchars($versements[$versement_index]['nature_versement'] ?? '')."</td>";
+                                            echo "<td class='hidden text-truncate' style='max-width: 120px;' title='".number_format($versements[$versement_index]['montant'], 0, ',', ' ')." FCFA'>
+                                                    ".number_format($versements[$versement_index]['montant'], 0, ',', ' ')." FCFA
+                                                </td>";
+                                            echo "<td class='hidden text-truncate' style='max-width: 100px;' title='".htmlspecialchars($versements[$versement_index]['date_versement'])."'>
+                                                    ".htmlspecialchars($versements[$versement_index]['date_versement'])."
+                                                </td>";
+                                            echo "<td class='hidden text-truncate' style='max-width: 150px;' title='".htmlspecialchars($versements[$versement_index]['nature_versement'] ?? '')."'>
+                                                    ".htmlspecialchars($versements[$versement_index]['nature_versement'] ?? '')."
+                                                </td>";
                                         } else {
                                             echo "<td class='hidden'>-</td>";
                                             echo "<td class='hidden'>-</td>";
@@ -217,7 +261,9 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                     }
                                     
                                     // Affichage du total des versements
-                                    echo "<td><strong>".number_format($total_versements, 0, ',', ' ')." FCFA</strong></td>";
+                                    echo "<td class='text-truncate' style='max-width: 120px;' title='".number_format($total_versements, 0, ',', ' ')." FCFA'>
+                                            <strong>".number_format($total_versements, 0, ',', ' ')." FCFA</strong>
+                                        </td>";
                                     
                                     echo "<td class='text-center no_export'>
                                             <div class='form-check form-switch mb-4'> 
@@ -225,21 +271,25 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                             </div>
                                         </td>
                                         <td class='text-end no_export'>
-                                            <form method='post' action='".$url."' style='display:inline;'>
-                                                <input type='hidden' name='id_souscripteur' value='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'>
-                                                
-                                                <a href='update_souscripteurs.php?id_souscripteur=" . crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C') . "' class='btn btn-light btn-sm' data-toggle='tooltip' data-placement='top' title='Modifier le souscripteur " . htmlspecialchars($souscripteur['nom_complet'] ?? '') . "'>                                                            
-                                                <i class='fas fa-edit me-1'></i>
+                                            <div class='d-flex gap-2 justify-content-end'>
+                                                <a href='update_souscripteurs.php?id_souscripteur=".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."' 
+                                                class='btn btn-light btn-sm' 
+                                                data-toggle='tooltip' 
+                                                title='Modifier ".htmlspecialchars($souscripteur['nom_complet'] ?? '')."'>
+                                                    <i class='fas fa-edit'></i>
                                                 </a>
                                                 
-                                                <button type='button' class='btn btn-light btn-sm btn-supprimer' 
-                                                    data-id='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'
-                                                    data-type='souscripteur'>
-                                                    <i class='fas fa-trash-alt me-1'></i>
+                                                <button type='button' 
+                                                        class='btn btn-light btn-sm btn-supprimer' 
+                                                        data-id='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'
+                                                        data-type='souscripteur'
+                                                        data-toggle='tooltip'
+                                                        title='Supprimer ce souscripteur'>
+                                                    <i class='fas fa-trash-alt'></i>
                                                 </button>
-                                            </form>
+                                            </div>
                                         </td>
-                                    </tr>";
+                                        </tr>";
                                 }
                                 ?>                          
                             </tbody>

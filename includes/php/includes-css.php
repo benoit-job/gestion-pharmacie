@@ -404,6 +404,42 @@
         }
     </style>
     
+<style>
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 0;
+    }
+
+    /* Amélioration des tooltips */
+    [data-toggle="tooltip"] {
+        cursor: pointer;
+        position: relative;
+    }
+
+    /* Style pour les cellules avec texte tronqué */
+    td.text-truncate {
+        position: relative;
+    }
+
+    td.text-truncate:hover::after {
+        content: attr(title);
+        position: absolute;
+        left: 0;
+        top: 100%;
+        background: #333;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 100;
+        white-space: normal;
+        width: auto;
+        max-width: 300px;
+    }
+</style>
+    
     <script>
       var phoenixIsRTL = window.config.config.phoenixIsRTL;
       if (phoenixIsRTL) {

@@ -316,9 +316,9 @@ include_once("includes/auth_functions.php");
                                 <!-- Boutons à droite -->
                                 <div>
                                     <input type="hidden" name="id_souscripteur" value="<?= htmlspecialchars($_SESSION['id_souscripteur']) ?>">
-                                    <button type="button" class="btn btn-outline-secondary me-3" id="btn-annuler-tout">
-                                        <i class="fas fa-eraser me-2"></i> Tout Annuler
-                                    </button>
+                                    <a href="liste_souscripteurs.php" class="btn btn-outline-info me-2">
+                                        <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                                    </a>
                                     <button type="submit" class="btn btn-primary" name="modifierSouscripteur" id="btn-modifier-souscripteur">
                                         <i class="fas fa-save me-2"></i> Modifier le Souscripteur
                                     </button>

@@ -149,7 +149,7 @@ if (isset($_POST["supprimerVersement"])) {
                                             name="id_souscripteur"
                                             style="border-radius: 20px; border: 1px solid #ced4da; padding: 8px 15px;"
                                             onchange="this.form.submit()">
-                                        <option disabled selected>Choisissez un souscripteur...</option>
+                                        <option disabled selected>------------</option>
                                         <?php
                                             $selectedId = isset($_GET['id_souscripteur']) ? $_GET['id_souscripteur'] : 0;
                                             $query = "SELECT id_souscripteur, UPPER(CONCAT(nom, ' ', prenom)) AS nom_souscripteur 
@@ -175,7 +175,7 @@ if (isset($_POST["supprimerVersement"])) {
                                             style="border-radius: 20px; border: 1px solid #ced4da; padding: 8px 15px;"
                                             onchange="this.form.submit()"
                                             <?php echo empty($_GET['id_souscripteur']) ? 'disabled' : ''; ?>>
-                                        <option disabled selected>année...</option>
+                                        <option disabled selected>-----------</option>
                                         <?php
                                             if(!empty($_GET['id_souscripteur'])) {
                                                 $currentYear = date('Y');
@@ -195,7 +195,7 @@ if (isset($_POST["supprimerVersement"])) {
                             <?php if(empty($_GET['id_souscripteur'])): ?>
                                 <div class="alert-no-souscripteur">
                                     <i class="fas fa-exclamation-circle me-2"></i>
-                                    Veuillez sélectionner un souscripteur pour ajouter ou consulter ses versements.
+                                    Veuillez sélectionner un souscripteur pour modifier ou consulter ses versements.
                                 </div>
                             <?php else: ?>
                                 <!-- Formulaire de versement -->

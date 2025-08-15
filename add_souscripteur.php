@@ -334,6 +334,75 @@ include_once("includes/auth_functions.php");
 <!-- LIENS À METTRE DANS LE <head> -->
 
 
+   <script>
+    // Script à ajouter dans votre page après les autres scripts
+$(document).ready(function() {
+    // Gestion du bouton "Tout Annuler"
+    $('#btn-annuler-tout').on('click', function() {
+        // Demander confirmation à l'utilisateur
+        if (confirm('Êtes-vous sûr de vouloir tout annuler ? Toutes les données saisies seront perdues.')) {
+            resetAllForm();
+        }
+    });
+    
+    // Fonction pour réinitialiser complètement le formulaire
+    function resetAllForm() {
+        // 1. Réinitialiser tous les champs du formulaire
+        $('#form-nouveau-souscripteur')[0].reset();
+        
+        // 2. Réinitialiser les selects avec leurs valeurs par défaut
+        $('#id_type_souscripteur').val('').trigger('change');
+        $('#organizerSingle').val('').trigger('change');
+        $('#id_lieu_exercice').val('').trigger('change');
+        $('#secteur_activite').val('').trigger('change');
+        
+        // 3. Réinitialiser l'image et ses composants
+        resetImage();
+        
+        // 4. Fermer tous les accordéons sauf le premier (Informations Personnelles)
+        $('#collapseInfosPerso').addClass('show');
+        $('#collapseCoordonnees').removeClass('show');
+        $('#collapseProfession').removeClass('show');
+        $('#collapseDocuments').removeClass('show');
+        
+        // 5. Mettre à jour les boutons d'accordéon
+        $('.accordion-button').each(function() {
+            if ($(this).attr('data-bs-target') === '#collapseInfosPerso') {
+                $(this).removeClass('collapsed').attr('aria-expanded', 'true');
+            } else {
+                $(this).addClass('collapsed').attr('aria-expanded', 'false');
+            }
+        });
+        
+        // 6. Remettre le focus sur le premier champ
+        $('#id_type_souscripteur').focus();
+        
+        // 7. Afficher une notification de confirmation
+        showToast('info', 'Formulaire réinitialisé avec succès');
+    }
+    
+    // Fonction pour réinitialiser l'image (si pas déjà définie)
+    if (typeof resetImage !== 'function') {
+        function resetImage() {
+            const input = document.getElementById('image_etablissement');
+            const preview = document.getElementById('image_preview');
+            const defaultIcon = document.getElementById('default_icon');
+            const resetBtn = document.getElementById('resetBtn');
+            const frame = document.querySelector('.image-preview-frame');
+            
+            if (input) input.value = '';
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+            if (defaultIcon) defaultIcon.style.display = 'flex';
+            if (frame) frame.style.backgroundColor = '#f8f9fa';
+            if (resetBtn) resetBtn.style.display = 'none';
+        }
+    }
+});
+   </script>
+
   </body>
 
 </html>
