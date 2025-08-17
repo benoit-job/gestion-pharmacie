@@ -1,3 +1,52 @@
+<style>
+    .navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative; /* Ajout important */
+    }
+
+    /* Style spécifique pour le bouton toggler */
+    .navbar-toggler-humburger-icon {
+    z-index: 1000; /* S'assure qu'il est au-dessus */
+    position: relative; /* Nécessaire pour z-index */
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    }
+
+    /* Garantir la visibilité du bouton */
+    .navbar-toggler {
+    display: block !important; /* Force l'affichage */
+    visibility: visible !important;
+    }
+
+    .logo-text {
+    flex-shrink: 1;
+    transition: all 0.3s ease; /* Animation douce */
+    }
+
+    @media (max-width: 767px) {
+    .logo-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+    
+    /* S'assurer que le bouton est visible */
+    .navbar-toggler-humburger-icon {
+        margin-right: 8px;
+    }
+    }
+
+    @media (min-width: 768px) {
+    .logo-text {
+        white-space: normal;
+        max-width: none;
+    }
+    }
+</style>
 <nav class="navbar navbar-top fixed-top navbar-expand" id="navbarDefault">
   <div class="collapse navbar-collapse justify-content-between">
     <div class="navbar-logo">
@@ -11,13 +60,14 @@
         <div class="d-flex align-items-center">
           <div class="d-flex align-items-center">
             <img id='imgLogo' src="assets/img/icons/logo.png" class='rounded' height='40px'/>
-            <p class="logo-text ms-2 text-truncate d-inline-block" 
-              style="max-width: 150px;" 
-              data-bs-toggle="tooltip" 
-              data-bs-placement="bottom" 
-              title="PharmaGestion">
-              PharmaGestion
+            <p class="logo-text ms-2 d-inline-block" 
+                style="max-width: 150px;" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="bottom" 
+                title="PharmaGestion">
+                PharmaGestion
             </p>
+
           </div> 
         </div>
       </a>

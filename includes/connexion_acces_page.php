@@ -66,7 +66,7 @@ if (!function_exists('can')) {
 // Fonction d'aide pour vérifier si l'utilisateur est admin
 function isAdmin() {
     return isset($_SESSION['user']['role_id']) && 
-           ($_SESSION['user']['role_id'] == 4 || $_SESSION['user']['role_id'] == 5);
+           ($_SESSION['user']['role_id'] == 1 || $_SESSION['user']['role_id'] == 2);
 }
 
 // Fonction pour obtenir le nom d'affichage de l'utilisateur

@@ -1,5 +1,4 @@
 <?php
-// Fichier de connexion mis à jour
 session_start();
 include("includes/connexion_bdd.php");
 include("includes/fonctions.php");
@@ -9,7 +8,6 @@ if (isset($_POST['connexion'])) {
     $telephone = strip_tags(htmlspecialchars(trim($_POST["telephone"])));
     $password = strip_tags(htmlspecialchars(trim($_POST["password"])));
 
-    // Requête modifiée pour inclure les informations du rôle
     $query = "SELECT u.*, r.nom as role_name, r.description as role_description
               FROM users u
               LEFT JOIN roles r ON u.role_id = r.id
@@ -27,22 +25,15 @@ if (isset($_POST['connexion'])) {
     $user = mysqli_fetch_assoc($result);
 
     if ($user) {
-        // Stocker les informations utilisateur en session
         $_SESSION['user'] = $user;
-        
-        // Charger les permissions de l'utilisateur
+
         $_SESSION['user_permissions'] = getUserPermissions($user['id'], $bdd);
         
-        // Logger la connexion (optionnel)
         logUserActivity('index', 'Connexion réussie', $bdd);
-        // Affichage des données pour débogage
-
         
-        // Vérifier si l'utilisateur a au moins accès au dashboard
         if (hasPermission('dashboard.view') || isSuperAdmin()) {
             echo "succes";
         } else {
-            // L'utilisateur n'a aucune permission valide
             session_destroy();
             echo "failed !! Aucune permission accordée";
         }

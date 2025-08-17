@@ -117,13 +117,32 @@ if (isset($_POST['role_id'])) {
 
 function getActionBadgeColor($action) {
     switch (strtolower($action)) {
-        case 'create': return 'success';
-        case 'read': return 'info';
-        case 'update': return 'warning';
-        case 'delete': return 'danger';
-        case 'export': return 'secondary';
-        case 'all': return 'primary';
-        default: return 'light';
+        case 'create':
+            return 'success';   // Vert pour création
+        case 'view':
+            return 'info';      // Bleu clair pour visualisation
+        case 'edit':
+            return 'warning';   // Jaune pour modification
+        case 'delete':
+            return 'danger';    // Rouge pour suppression
+        case 'export':
+            return 'secondary'; // Gris pour export
+        case 'import':
+            return 'primary';   // Bleu vif pour import
+        case 'manage':
+            return 'dark';      // Noir/gris foncé pour administration
+        case 'general':
+        case 'genre':
+        case 'region':
+        case 'tableau_croise':
+            return 'info';      // Même couleur que view pour cohérence
+        case 'suivi':
+            return 'primary';   // Bleu vif pour suivi
+        case 'all':
+            return 'primary';   // Bleu vif pour accès total
+        default:
+            return 'light';     // Couleur neutre par défaut
     }
 }
+
 ?>

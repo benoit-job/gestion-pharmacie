@@ -438,6 +438,7 @@
         width: auto;
         max-width: 300px;
     }
+    
 </style>
     
     <script>

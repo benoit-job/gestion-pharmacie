@@ -153,21 +153,25 @@ if (isset($_POST["supprimerType"])) {
                                             </td>
                                             <td class='text-end'>
                                                 <form method='post' action='".$url."' style='display:inline;'>
-                                                    <input type='hidden' name='id_type' value='".crypt_decrypt_chaine($type['id'], 'C')."'>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm modififierInfos' 
-                                                    id_type='".crypt_decrypt_chaine($type['id'], 'C')."'
-                                                        nom_type='".htmlspecialchars($type['nom_type'])."'
-                                                        active='".htmlspecialchars($type['active'])."'>
-                                                        <i class='fas fa-edit me-1'></i>
-                                                    </button>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm btn-supprimer' 
+                                                    <input type='hidden' name='id_type' value='".crypt_decrypt_chaine($type['id'], 'C')."'>";
+                                                if (hasPermission('type_souscripteurs.edit')) {
+                                                    echo "<button type='button' class='btn btn-light btn-sm modififierInfos' 
+                                                        id_type='".crypt_decrypt_chaine($type['id'], 'C')."'
+                                                            nom_type='".htmlspecialchars($type['nom_type'])."'
+                                                            active='".htmlspecialchars($type['active'])."'>
+                                                            <i class='fas fa-edit me-1'></i>
+                                                        </button>";
+                                                }
+                                                
+                                                if (hasPermission('type_souscripteurs.delete')) {
+                                                echo "<button type='button' class='btn btn-light btn-sm btn-supprimer' 
                                                         data-id='".crypt_decrypt_chaine($type['id'], 'C')."'
                                                         data-type='type'>
                                                         <i class='fas fa-trash-alt me-1'></i>
-                                                    </button>
-                                                </form>
+                                                    </button>";
+                                            }
+
+                                         echo "</form>
                                             </td>
                                         </tr>";
                                 }

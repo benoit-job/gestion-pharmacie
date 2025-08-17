@@ -175,9 +175,9 @@ if (isset($_POST["supprimerLieu"])) {
                                             </td>
                                             <td class='text-end'>
                                                 <form method='post' action='".$url."' style='display:inline;'>
-                                                    <input type='hidden' name='id_lieu' value='".crypt_decrypt_chaine($lieu['id'], 'C')."'>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm modififierInfos' 
+                                                    <input type='hidden' name='id_lieu' value='".crypt_decrypt_chaine($lieu['id'], 'C')."'>";
+                                                if (hasPermission('geographie.lieux.update')) {
+                                                    echo "<button type='button' class='btn btn-light btn-sm modififierInfos' 
                                                         id_lieu='".crypt_decrypt_chaine($lieu['id'], 'C')."'
                                                         nom_lieu='".htmlspecialchars($lieu['nom_lieu'] ?? '')."'
                                                         id_region='".htmlspecialchars($lieu['id_region'] ?? '')."'
@@ -185,14 +185,18 @@ if (isset($_POST["supprimerLieu"])) {
                                                         lieulat='".htmlspecialchars($lieu['lieulat'] ?? '')."'
                                                         active='".htmlspecialchars($lieu['active'] ?? '')."'>
                                                         <i class='fas fa-edit me-1'></i>
-                                                    </button>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm btn-supprimer' 
+                                                    </button>";
+                                                }
+                                                
+                                                if (hasPermission('geographie.lieux.delete')) {
+                                                echo "<button type='button' class='btn btn-light btn-sm btn-supprimer' 
                                                         data-id='".crypt_decrypt_chaine($lieu['id'], 'C')."'
                                                         data-type='lieu'>
                                                         <i class='fas fa-trash-alt me-1'></i>
-                                                    </button>
-                                                </form>
+                                                    </button>";
+                                            }
+
+                                         echo "</form>
                                             </td>
                                         </tr>";
                                 }

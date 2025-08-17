@@ -19,8 +19,8 @@ function hasPermission($permission_name, $bdd = null) {
         return false;
     }
 
-    // Autoriser tout pour super admin (role_id = 4)
-    if ($_SESSION['user']['role_id'] == 4) {
+    // Autoriser tout pour super admin (role_id = 1)
+    if ($_SESSION['user']['role_id'] == 1) {
         return true;
     }
 
@@ -134,7 +134,7 @@ function getUserPermissions($user_id = null, $bdd = null) {
  * Vérifier si l'utilisateur est super admin
  */
 function isSuperAdmin() {
-    return isset($_SESSION['user']['role_id']) && $_SESSION['user']['role_id'] == 4;
+    return isset($_SESSION['user']['role_id']) && $_SESSION['user']['role_id'] == 1;
 }
 
 /**
@@ -193,26 +193,26 @@ function refreshUserSession($user_id, $bdd = null) {
  */
 function checkPageAccess($page_name) {
     $page_permissions = [
-        'liste_souscripteurs.php' => 'souscripteurs.read',
-        'add_souscripteur.php' => 'souscripteurs.create',
-        'souscripteurs_a_jour.php' => 'souscripteurs.read',
-        'sans_versement.php' => 'souscripteurs.read',
-        'versements_partiels.php' => 'souscripteurs.read',
-        'add_versement.php' => 'versements.create',
-        'historique_versements.php' => 'versements.read',
-        'modif_versements.php' => 'versements.update',
-        'suivi_versements.php' => 'versements.read',
-        'statistiques_generales.php' => 'rapports.view',
-        'repartition_genre.php' => 'rapports.view',
-        'repartition_region.php' => 'rapports.view',
-        'tableau_croise.php' => 'rapports.advanced',
-        'regions_pharma.php' => 'geographie.read',
-        'lieux_exercice.php' => 'geographie.read',
-        'cartographie.php' => 'geographie.read',
-        'utilisateurs.php' => 'admin.users',
-        'roles_permissions.php' => 'admin.roles',
-        'sauvegardes.php' => 'admin.backup',
-        'accueil.php' => 'dashboard.view'
+        'liste_souscripteurs.php'      => 'souscripteurs.view',
+        'add_souscripteur.php'         => 'souscripteurs.create',
+        'souscripteurs_a_jour.php'     => 'souscripteurs.view_a_jour',
+        'sans_versement.php'           => 'souscripteurs.view_sans_versement',
+        'versements_partiels.php'      => 'souscripteurs.view_partiels',
+        'add_versement.php'            => 'versements.create',
+        'historique_versements.php'    => 'versements.view',
+        'modif_versements.php'         => 'versements.edit',
+        'suivi_versements.php'         => 'versements.suivi',
+        'statistiques_generales.php'   => 'rapports.general',
+        'repartition_genre.php'        => 'rapports.genre',
+        'repartition_region.php'       => 'rapports.region',
+        'tableau_croise.php'           => 'rapports.tableau_croise',
+        'regions_pharma.php'           => 'geographie.regions',
+        'lieux_exercice.php'           => 'geographie.lieux',
+        'cartographie.php'              => 'geographie.cartographie',
+        'utilisateurs.php'             => 'admin.users',
+        'roles_permissions.php'        => 'admin.roles',
+        'sauvegardes.php'               => 'admin.backup',
+        'accueil.php'                   => 'dashboard.view'
     ];
 
     if (isset($page_permissions[$page_name])) {
@@ -222,26 +222,24 @@ function checkPageAccess($page_name) {
     return true;
 }
 
-/**
- * Générer un message d'erreur de permission personnalisé
- */
 function getPermissionErrorMessage($permission_name) {
     $messages = [
-        'souscripteurs.create' => 'Vous n\'êtes pas autorisé à créer de nouveaux souscripteurs.',
-        'souscripteurs.update' => 'Vous n\'êtes pas autorisé à modifier les souscripteurs.',
-        'souscripteurs.delete' => 'Vous n\'êtes pas autorisé à supprimer des souscripteurs.',
-        'versements.create' => 'Vous n\'êtes pas autorisé à créer de nouveaux versements.',
-        'versements.update' => 'Vous n\'êtes pas autorisé à modifier les versements.',
-        'versements.delete' => 'Vous n\'êtes pas autorisé à supprimer des versements.',
-        'admin.users' => 'Vous n\'avez pas accès à la gestion des utilisateurs.',
-        'admin.roles' => 'Vous n\'avez pas accès à la gestion des rôles et permissions.',
-        'rapports.advanced' => 'Vous n\'avez pas accès aux rapports avancés.'
+        'souscripteurs.create'          => 'Vous n\'êtes pas autorisé à créer de nouveaux souscripteurs.',
+        'souscripteurs.edit'            => 'Vous n\'êtes pas autorisé à modifier les souscripteurs.',
+        'souscripteurs.delete'          => 'Vous n\'êtes pas autorisé à supprimer des souscripteurs.',
+        'versements.create'             => 'Vous n\'êtes pas autorisé à créer de nouveaux versements.',
+        'versements.edit'               => 'Vous n\'êtes pas autorisé à modifier les versements.',
+        'versements.delete'             => 'Vous n\'êtes pas autorisé à supprimer des versements.',
+        'admin.users'                   => 'Vous n\'avez pas accès à la gestion des utilisateurs.',
+        'admin.roles'                   => 'Vous n\'avez pas accès à la gestion des rôles et permissions.',
+        'rapports.tableau_croise'       => 'Vous n\'avez pas accès au tableau croisé.'
     ];
 
     return isset($messages[$permission_name]) 
         ? $messages[$permission_name] 
         : 'Accès non autorisé. Vous n\'avez pas les permissions nécessaires.';
 }
+
 
 /**
  * Logger les actions des utilisateurs

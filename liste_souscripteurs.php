@@ -271,23 +271,28 @@ if (isset($_POST["supprimerSouscripteur"])) {
                                             </div>
                                         </td>
                                         <td class='text-end no_export'>
-                                            <div class='d-flex gap-2 justify-content-end'>
-                                                <a href='update_souscripteurs.php?id_souscripteur=".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."' 
+                                            <div class='d-flex gap-2 justify-content-end'>";
+                                            if (hasPermission('souscripteurs.edit')) {
+                                                echo "<a href='update_souscripteurs.php?id_souscripteur=".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."' 
                                                 class='btn btn-light btn-sm' 
                                                 data-toggle='tooltip' 
                                                 title='Modifier ".htmlspecialchars($souscripteur['nom_complet'] ?? '')."'>
                                                     <i class='fas fa-edit'></i>
-                                                </a>
+                                                </a>";
+                                            }
                                                 
-                                                <button type='button' 
-                                                        class='btn btn-light btn-sm btn-supprimer' 
-                                                        data-id='".crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C')."'
-                                                        data-type='souscripteur'
-                                                        data-toggle='tooltip'
-                                                        title='Supprimer ce souscripteur'>
-                                                    <i class='fas fa-trash-alt'></i>
-                                                </button>
-                                            </div>
+                                                if (hasPermission('souscripteurs.delete')) {
+                                                echo "<button type='button' 
+                                                            class='btn btn-light btn-sm btn-supprimer' 
+                                                            data-id='" . crypt_decrypt_chaine($souscripteur['id_souscripteur'], 'C') . "'
+                                                            data-type='souscripteur'
+                                                            data-toggle='tooltip'
+                                                            title='Supprimer ce souscripteur'>
+                                                        <i class='fas fa-trash-alt'></i>
+                                                    </button>";
+                                            }
+
+                                         echo "  </div>
                                         </td>
                                         </tr>";
                                 }

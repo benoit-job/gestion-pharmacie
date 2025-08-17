@@ -152,14 +152,15 @@ if(isset($_POST["updatePermissions"])) {
                                     </thead>
                                     <tbody>
                                         <?php 
-                                        $query = "SELECT r.*, 
-                                                        COUNT(u.id) as nb_users,
-                                                        COUNT(rp.permission_id) as nb_permissions
+                                        $query = " SELECT 
+                                                    r.id, r.nom, r.description, r.statut, r.couleur,
+                                                    COUNT(DISTINCT u.id)                AS nb_users,
+                                                    COUNT(DISTINCT rp.permission_id)    AS nb_permissions
                                                 FROM roles r
-                                                LEFT JOIN users u ON r.id = u.role_id
-                                                LEFT JOIN role_permissions rp ON r.id = rp.role_id
+                                                LEFT JOIN users u           ON u.role_id = r.id
+                                                LEFT JOIN role_permissions rp ON rp.role_id = r.id
                                                 WHERE r.statut = 'actif'
-                                                GROUP BY r.id
+                                                GROUP BY r.id, r.nom, r.description, r.statut, r.couleur
                                                 ORDER BY r.nom";
                                         $resultat = mysqli_query($bdd, $query);
                                         
@@ -185,7 +186,7 @@ if(isset($_POST["updatePermissions"])) {
                                                             <i class='fas fa-key'></i>
                                                         </button>";
                                             
-                                            if ($role['id'] > 4) { // Ne pas supprimer les rôles par défaut
+                                            if ($role['id'] > 2) { // Ne pas supprimer les rôles par défaut
                                                 echo "<button type='button' class='btn btn-light btn-sm btn-supprimer' 
                                                         data-id='".crypt_decrypt_chaine($role['id'], 'C')."'
                                                         data-type='role'>
@@ -367,18 +368,7 @@ if(isset($_POST["updatePermissions"])) {
     });
 
     // Gestion de la suppression
-    $('.btn-supprimer').click(function() {
-        var id = $(this).data('id');
-        var type = $(this).data('type');
-        
-        if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
-            var form = $('<form method="post" action=""></form>');
-            form.append('<input type="hidden" name="id_' + type + '" value="' + id + '">');
-            form.append('<input type="hidden" name="supprimer' + type.charAt(0).toUpperCase() + type.slice(1) + '" value="1">');
-            $('body').append(form);
-            form.submit();
-        }
-    });
+  
     </script>
 
 </body>

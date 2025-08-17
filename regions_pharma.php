@@ -153,22 +153,26 @@ if (isset($_POST["supprimerRegion"])) {
                                             </td>
                                             <td class='text-end'>
                                                 <form method='post' action='".$url."' style='display:inline;'>
-                                                    <input type='hidden' name='id_region' value='".crypt_decrypt_chaine($region['id'], 'C')."'>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm modififierInfos' 
+                                                    <input type='hidden' name='id_region' value='".crypt_decrypt_chaine($region['id'], 'C')."'>";
+                                                if (hasPermission('geographie.regions.update')) {
+                                                    echo "<button type='button' class='btn btn-light btn-sm modififierInfos' 
                                                     id_region='".crypt_decrypt_chaine($region['id'], 'C')."'
                                                         nom_region='".htmlspecialchars($region['nom_region'])."'
                                                         code_region='".htmlspecialchars($region['code_region'])."'
                                                         active='".htmlspecialchars($region['active'])."'>
                                                         <i class='fas fa-edit me-1'></i>
-                                                    </button>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm btn-supprimer' 
+                                                    </button>";
+                                                }
+                                                
+                                                if (hasPermission('geographie.regions.delete')) {
+                                                echo "<button type='button' class='btn btn-light btn-sm btn-supprimer' 
                                                         data-id='".crypt_decrypt_chaine($region['id'], 'C')."'
                                                         data-type='region'>
                                                         <i class='fas fa-trash-alt me-1'></i>
-                                                    </button>
-                                                </form>
+                                                    </button>";
+                                            }
+
+                                         echo "</form>
                                             </td>
                                         </tr>";
                                 }

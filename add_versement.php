@@ -148,14 +148,16 @@ if (isset($_POST["supprimerVersement"])) {
                                             <td>".number_format($versement["montant"], 0, ',', ' ')." FCFA</td>
                                             <td class='text-end'>
                                                 <form method='post' action='".$url."' style='display:inline;'>
-                                                    <input type='hidden' name='id_versement' value='".crypt_decrypt_chaine($versement['id'], 'C')."'>
-                                                    
-                                                    <button type='button' class='btn btn-light btn-sm btn-supprimer' 
+                                                    <input type='hidden' name='id_versement' value='".crypt_decrypt_chaine($versement['id'], 'C')."'>";
+                                                if (hasPermission('versements.delete')) {
+                                                    echo "<button type='button' class='btn btn-light btn-sm btn-supprimer' 
                                                         data-id='".crypt_decrypt_chaine($versement['id'], 'C')."'
                                                         data-type='versement'>
                                                         <i class='fas fa-trash-alt me-1'></i>
-                                                    </button>
-                                                </form>
+                                                    </button>";
+                                            }
+
+                                         echo "</form>
                                             </td>
                                         </tr>";
                                 }
